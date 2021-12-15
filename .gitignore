@@ -1,0 +1,10 @@
+.idea
+__pycache__
+config.py
+*.log
+traceback
+extlib
+external_api
+dummy.json
+test.py
+venv
