@@ -17,10 +17,14 @@ class LaytheBot(dico_command.Bot):
             self.get_prefix,
             intents=intents,
             default_allowed_mentions=dico.AllowedMentions(everyone=False),
-            monoshard=Config.MONO_SHARD
+            monoshard=Config.MONO_SHARD,
         )
         self.laythe_logger = logger
-        dico_interaction.InteractionClient(client=self, guild_ids_lock=Config.TESTING_GUILDS, auto_register_commands=bool(Config.TESTING_GUILDS))
+        dico_interaction.InteractionClient(
+            client=self,
+            guild_ids_lock=Config.TESTING_GUILDS,
+            auto_register_commands=bool(Config.TESTING_GUILDS),
+        )
         self.nugrid = None  # soonTM
 
     async def get_prefix(self, message: dico.Message):

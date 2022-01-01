@@ -8,7 +8,8 @@ from dico_interaction import __version__ as interaction_version
 
 from module import LaytheBot
 
-print(r"""
+print(
+    r"""
  _                    _    _           
 | |                  | |  | |          
 | |      __ _  _   _ | |_ | |__    ___ 
@@ -17,21 +18,30 @@ print(r"""
 \_____/ \__,_| \__, | \__||_| |_| \___|
                 __/ |                  
                |___/                   
-""")
+"""
+)
 
-print(f"""Laythe v2
+print(
+    f"""Laythe v2
 Powered by dico {dico_version}, dico-command {command_version}, and dico-interaction {interaction_version}.
-Please wait...""")
+Please wait..."""
+)
 
 
-logger = logging.getLogger('laythe')
+logger = logging.getLogger("laythe")
 logging.basicConfig(level=logging.DEBUG)  # DEBUG/INFO/WARNING/ERROR/CRITICAL
-handler = logging.FileHandler(filename='laythe.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+handler = logging.FileHandler(filename="laythe.log", encoding="utf-8", mode="w")
+handler.setFormatter(
+    logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
+)
 logger.addHandler(handler)
 
 bot = LaytheBot(logger=logger)
 
-[bot.load_module(f"addons.{x[:-3]}") for x in os.listdir("addons") if not x.startswith("_")]
+[
+    bot.load_module(f"addons.{x[:-3]}")
+    for x in os.listdir("addons")
+    if not x.startswith("_")
+]
 bot.load_module("dp")
 bot.run()

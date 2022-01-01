@@ -8,7 +8,12 @@ from dico_command import Addon, on
 from dico_interaction import InteractionContext
 
 from config import Config
-from module import PermissionUnavailable, PermissionNotFound, BotPermissionNotFound, permission_translates
+from module import (
+    PermissionUnavailable,
+    PermissionNotFound,
+    BotPermissionNotFound,
+    permission_translates,
+)
 from module.utils import EmbedColor
 
 if TYPE_CHECKING:
@@ -20,12 +25,13 @@ class Error(Addon, name="오류"):
     async def on_interaction_error(self, ctx: InteractionContext, ex: Exception):
         if not ctx.deferred:
             await ctx.defer()
-        tb = ''.join(traceback.format_exception(type(ex), ex, ex.__traceback__))
-        base = Embed(title="이런! ", color=EmbedColor.NEGATIVE, timestamp=ctx.id.timestamp)
+        tb = "".join(traceback.format_exception(type(ex), ex, ex.__traceback__))
+        base = Embed(
+            title="이런! ", color=EmbedColor.NEGATIVE, timestamp=ctx.id.timestamp
+        )
         if Config.DEBUG:
             print(tb, file=sys.stderr)
         edited_tb = ("..." + tb[-1979:]) if len(tb) > 1982 else tb
-        print(type(ex))
         if isinstance(ex, BotPermissionNotFound):
             base.title += "이 서버에서 제 권한이 이 명령어를 실행하기에는 부족해요."
             base.description = f"`{'`, `'.join([permission_translates.get(x, x) for x in ex])}` 권한을 저에게 부여해주세요."
@@ -38,7 +44,10 @@ class Error(Addon, name="오류"):
         else:
             base.title += "예기치 못한 오류가 발생했어요..."
             base.description = f"디버깅용 메시지: ```py\n{edited_tb}\n```"
-            base.add_field(name="잠시만요!", value="이 오류 정보를 개발자에게 전송할까요? 오류 전송 시 오류 내용과 명령어를 실행한 메시지 내용이 전달돼요.")
+            base.add_field(
+                name="잠시만요!",
+                value="이 오류 정보를 개발자에게 전송할까요? 오류 전송 시 오류 내용과 명령어를 실행한 메시지 내용이 전달돼요.",
+            )
             report_required = True
         await ctx.send(embed=base)
 
@@ -49,4 +58,3 @@ def load(bot: "LaytheBot"):
 
 def unload(bot: "LaytheBot"):
     bot.unload_addons(Error)
-

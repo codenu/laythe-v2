@@ -33,7 +33,7 @@ permission_translates = {
     "manage_webhooks": "웹후크 관리하기",
     "manage_emojis": "이모티콘 및 스티커 관리",
     "use_slash_commands": "빗금 명령어 사용",
-    "request_to_speak": "발언권 요청하기"
+    "request_to_speak": "발언권 요청하기",
 }
 
 
@@ -58,7 +58,7 @@ rtc_region_translates = {
     "us_south": "미국 남부",
     "vip_amsterdam": "VIP 암스테르담",
     "vip_us_east": "VIP 미국 동부",
-    "vip_us_west": "VIP 미국 서부"
+    "vip_us_west": "VIP 미국 서부",
 }
 
 

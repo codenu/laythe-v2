@@ -6,8 +6,10 @@ from dico_interaction import InteractionContext
 
 
 PRELOADED_VALUES: Dict[str, int] = {
-            getattr(PermissionFlags, x): x for x in dir(PermissionFlags) if isinstance(getattr(PermissionFlags, x), int)
-        }
+    getattr(PermissionFlags, x): x
+    for x in dir(PermissionFlags)
+    if isinstance(getattr(PermissionFlags, x), int)
+}
 
 
 class PermissionNotFound(DicoException):
@@ -28,7 +30,9 @@ class BotPermissionNotFound(PermissionNotFound):
 
 class PermissionUnavailable(DicoException):
     def __init__(self):
-        super().__init__("Permission unavailable. This may happen due to invocation in DM or missing cache.")
+        super().__init__(
+            "Permission unavailable. This may happen due to invocation in DM or missing cache."
+        )
 
 
 def has_perm(*perms: Union[int, str], **kwargs: bool):
@@ -54,6 +58,7 @@ def has_perm(*perms: Union[int, str], **kwargs: bool):
             raise PermissionNotFound(*perms)
         else:
             return True
+
     return wrap
 
 
@@ -64,8 +69,12 @@ def bot_has_perm(*perms: Union[int, str], **kwargs: bool):
 
     async def wrap(ctx: InteractionContext):
         self_user = ctx.client.user
-        guild = ctx.client.get_guild(ctx.guild_id) or await ctx.client.request_guild(ctx.guild_id)
-        self_member = guild.get(self_user.id, "member") or await guild.request_member(self_user)
+        guild = ctx.client.get_guild(ctx.guild_id) or await ctx.client.request_guild(
+            ctx.guild_id
+        )
+        self_member = guild.get(self_user.id, "member") or await guild.request_member(
+            self_user
+        )
         perms_has = self_member.permissions
         if not perms_has:
             raise PermissionUnavailable
@@ -80,4 +89,5 @@ def bot_has_perm(*perms: Union[int, str], **kwargs: bool):
             raise BotPermissionNotFound(*perms)
         else:
             return True
+
     return wrap
