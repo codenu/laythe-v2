@@ -120,9 +120,7 @@ class Manage(Addon, name="관리"):
         required=True,
     )
     @checks(has_perm(kick_members=True), bot_has_perm(kick_members=True))
-    async def kick(
-        self, ctx: InteractionContext, user: GuildMember
-    ):
+    async def kick(self, ctx: InteractionContext, user: GuildMember):
         await ctx.defer()
         try:
             await self.bot.remove_guild_member(ctx.guild_id, user)
