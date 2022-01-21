@@ -6,9 +6,12 @@ import dico_interaction
 
 from config import Config
 
+from .database import LaytheDB
+
 
 class LaytheBot(dico_command.Bot):
     interaction: dico_interaction.InteractionClient
+    database: LaytheDB
 
     def __init__(self, *, logger: logging.Logger):
         intents = dico.Intents.no_privileged()
@@ -26,6 +29,13 @@ class LaytheBot(dico_command.Bot):
             auto_register_commands=bool(Config.TESTING_GUILDS),
         )
         self.nugrid = None  # soonTM
+
+    async def setup_bot(self):
+        self.database = await LaytheDB.login(host=Config.DB_HOST,
+                                             port=Config.DB_PORT,
+                                             login_id=Config.DB_ID,
+                                             login_pw=Config.DB_PW,
+                                             db_name=Config.DB_NAME)
 
     async def get_prefix(self, message: dico.Message):
         await self.wait_ready()

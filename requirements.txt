@@ -2,3 +2,4 @@ dico-api
 dico-command
 dico-interaction
 dico-dp
+aiomysql
