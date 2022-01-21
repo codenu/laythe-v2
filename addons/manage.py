@@ -1,11 +1,13 @@
 from typing import TYPE_CHECKING
+from contextlib import suppress
 
-from dico import ApplicationCommandOptionType, Message, GuildMember
-from dico.exception import BadRequest, NotFound, Forbidden
+from dico import ApplicationCommandOptionType, Message, GuildMember, User
+from dico.exception import BadRequest, NotFound, Forbidden, DicoException
 from dico_command import Addon
 from dico_interaction import slash, option, checks, InteractionContext
+from dico_interaction.exception import CheckFailed
 
-from module import has_perm, bot_has_perm
+from module import has_perm, bot_has_perm, PermissionNotFound
 
 if TYPE_CHECKING:
     from module.bot import LaytheBot
@@ -15,6 +17,29 @@ PURGE_METADATA = {"name": "정리", "description": "메시지 정리와 관련�
 
 
 class Manage(Addon, name="관리"):
+    async def addon_interaction_check(self, ctx: InteractionContext):
+        from dico_interaction import InteractionCommand
+        cmd: InteractionCommand = self.bot.interaction.get_command(ctx)
+        usage = f"/{cmd.command.name}"
+        if cmd.subcommand_group:
+            usage += f" {cmd.subcommand_group}"
+        if cmd.subcommand:
+            usage += f" {cmd.subcommand}"
+        payload = {
+            "content": f"/{cmd}",
+            "invoker": {
+                "id": ctx.author.id
+            }
+        }
+        self.bot.dispatch("management_command", payload)
+        return bool(ctx.guild_id)
+
+    async def on_addon_interaction_error(self, ctx: InteractionContext, error: Exception):
+        if isinstance(error, CheckFailed) and not issubclass(type(error), PermissionNotFound):
+            await ctx.send("❌ 해당 명령어는 DM에서는 사용할 수 없어요.")
+            return True
+        return False
+
     @slash(
         **PURGE_METADATA,
         subcommand="개수",
@@ -116,7 +141,7 @@ class Manage(Addon, name="관리"):
     @option(
         ApplicationCommandOptionType.USER,
         name="유저",
-        description="추방할 사용자",
+        description="추방할 유저",
         required=True,
     )
     @checks(has_perm(kick_members=True), bot_has_perm(kick_members=True))
@@ -132,6 +157,52 @@ class Manage(Addon, name="관리"):
             user_as = user.user if isinstance(user, GuildMember) else user
             await ctx.send(
                 f"✅ 성공적으로 <@{int(user)}>(`{user_as}` | ID: `{int(user)}`)을/를 추방했어요."
+            )
+
+    @slash(
+        "차단",
+        description="선택한 유저를 차단해요. 핵밴도 가능해요.",
+        connector={"유저": "user", "사유": "reason"},
+    )
+    @option(
+        ApplicationCommandOptionType.USER,
+        name="유저",
+        description="차단할 유저",
+        required=True,
+    )
+    @option(
+        ApplicationCommandOptionType.STRING,
+        name="사유",
+        description="차단의 사유",
+        required=False,
+    )
+    async def ban(
+        self, ctx: InteractionContext, user: GuildMember.TYPING, reason: str = None
+    ):
+        await ctx.defer()
+        try:
+            await self.bot.create_guild_ban(ctx.guild_id, user, reason=reason)
+        except NotFound:
+            await ctx.send("❌ 차단할 사용자를 찾지 못했어요.")
+        except Forbidden:
+            await ctx.send("❌ 레이테의 권한이 부족해요. `멤버 차단하기` 권한이 있는지 다시 확인해주세요.")
+        else:
+            with suppress(DicoException):
+                user_as = (
+                    user.user
+                    if isinstance(user, GuildMember)
+                    else user
+                    if isinstance(user, User)
+                    else self.bot.get_user(int(user))
+                    or await self.bot.request_user(int(user))
+                )
+                if user_as:
+                    await ctx.send(
+                        f"✅ 성공적으로 <@{int(user)}>(`{user_as}` | ID: `{int(user)}`)을/를 차단했어요. (사유: {reason})"
+                    )
+                    return
+            await ctx.send(
+                f"✅ 성공적으로 <@{int(user)}>(`유저를 찾지 못함` | ID: `{int(user)}`)을/를 차단했어요. (사유: {reason})"
             )
 
 
