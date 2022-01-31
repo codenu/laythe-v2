@@ -7,10 +7,10 @@ from dico_command import Addon
 from dico_interaction import slash, option, checks, InteractionContext
 from dico_interaction.exception import CheckFailed
 
-from module import has_perm, bot_has_perm, PermissionNotFound
+from laythe import has_perm, bot_has_perm, PermissionNotFound
 
 if TYPE_CHECKING:
-    from module.bot import LaytheBot
+    from laythe.bot import LaytheBot
 
 
 PURGE_METADATA = {"name": "정리", "description": "메시지 정리와 관련된 명령어들이에요."}

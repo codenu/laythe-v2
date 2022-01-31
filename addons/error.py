@@ -8,16 +8,16 @@ from dico_command import Addon, on
 from dico_interaction import InteractionContext
 
 from config import Config
-from module import (
+from laythe import (
     PermissionUnavailable,
     PermissionNotFound,
     BotPermissionNotFound,
     permission_translates,
 )
-from module.utils import EmbedColor
+from laythe.utils import EmbedColor
 
 if TYPE_CHECKING:
-    from module.bot import LaytheBot
+    from laythe.bot import LaytheBot
 
 
 class Error(Addon, name="오류"):

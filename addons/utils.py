@@ -23,7 +23,7 @@ from dico_interaction import (
     __version__ as interaction_version,
 )
 
-from module import (
+from laythe import (
     utils,
     verification_level_translates,
     verification_desc_translates,
@@ -31,7 +31,7 @@ from module import (
 )
 
 if TYPE_CHECKING:
-    from module.bot import LaytheBot
+    from laythe.bot import LaytheBot
 
 
 INFO_METADATA = {"name": "정보", "description": "다양한 정보를 보여주는 명령어들이에요."}

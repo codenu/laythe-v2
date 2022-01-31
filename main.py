@@ -6,7 +6,7 @@ from dico import __version__ as dico_version
 from dico_command import __version__ as command_version
 from dico_interaction import __version__ as interaction_version
 
-from module import LaytheBot
+from laythe import LaytheBot
 
 print(
     r"""
