@@ -19,23 +19,23 @@ PURGE_METADATA = {"name": "정리", "description": "메시지 정리와 관련�
 class Manage(Addon, name="관리"):
     async def addon_interaction_check(self, ctx: InteractionContext):
         from dico_interaction import InteractionCommand
+
         cmd: InteractionCommand = self.bot.interaction.get_command(ctx)
         usage = f"/{cmd.command.name}"
         if cmd.subcommand_group:
             usage += f" {cmd.subcommand_group}"
         if cmd.subcommand:
             usage += f" {cmd.subcommand}"
-        payload = {
-            "content": f"/{cmd}",
-            "invoker": {
-                "id": ctx.author.id
-            }
-        }
+        payload = {"content": f"/{cmd}", "invoker": {"id": ctx.author.id}}
         self.bot.dispatch("management_command", payload)
         return bool(ctx.guild_id)
 
-    async def on_addon_interaction_error(self, ctx: InteractionContext, error: Exception):
-        if isinstance(error, CheckFailed) and not issubclass(type(error), PermissionNotFound):
+    async def on_addon_interaction_error(
+        self, ctx: InteractionContext, error: Exception
+    ):
+        if isinstance(error, CheckFailed) and not issubclass(
+            type(error), PermissionNotFound
+        ):
             await ctx.send("❌ 해당 명령어는 DM에서는 사용할 수 없어요.")
             return True
         return False
@@ -162,7 +162,7 @@ class Manage(Addon, name="관리"):
     @slash(
         "차단",
         description="선택한 유저를 차단해요. 핵밴도 가능해요.",
-        connector={"유저": "user", "사유": "reason"},
+        connector={"유저": "user", "사유": "reason", "삭제": "delete_message_days"},
     )
     @option(
         ApplicationCommandOptionType.USER,
@@ -176,12 +176,29 @@ class Manage(Addon, name="관리"):
         description="차단의 사유",
         required=False,
     )
+    @option(
+        ApplicationCommandOptionType.INTEGER,
+        name="삭제",
+        description="차단할 유저가 보낸 메시지 중 삭제할 메시지를 보낸 일 수 (일 단위로, 최대 7일)",
+        required=False,
+    )
+    @checks(has_perm(ban_members=True), bot_has_perm(ban_members=True))
     async def ban(
-        self, ctx: InteractionContext, user: GuildMember.TYPING, reason: str = None
+        self,
+        ctx: InteractionContext,
+        user: GuildMember.TYPING,
+        reason: str = None,
+        delete_message_days: int = 0,
     ):
         await ctx.defer()
         try:
-            await self.bot.create_guild_ban(ctx.guild_id, user, reason=reason)
+            delete_message_days = min(delete_message_days, 7)
+            await self.bot.create_guild_ban(
+                ctx.guild_id,
+                user,
+                delete_message_days=delete_message_days,
+                reason=reason,
+            )
         except NotFound:
             await ctx.send("❌ 차단할 사용자를 찾지 못했어요.")
         except Forbidden:
