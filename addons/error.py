@@ -1,8 +1,6 @@
 import sys
 import traceback
 
-from typing import TYPE_CHECKING
-
 from dico import Embed
 from dico_command import Addon, on
 from dico_interaction import InteractionContext
@@ -13,14 +11,13 @@ from laythe import (
     PermissionNotFound,
     BotPermissionNotFound,
     permission_translates,
+    LaytheBot,
+    LaytheAddonBase,
 )
 from laythe.utils import EmbedColor
 
-if TYPE_CHECKING:
-    from laythe.bot import LaytheBot
 
-
-class Error(Addon, name="오류"):
+class Error(LaytheAddonBase, name="오류"):
     @on("interaction_error")
     async def on_interaction_error(self, ctx: InteractionContext, ex: Exception):
         if not ctx.deferred:
@@ -52,9 +49,9 @@ class Error(Addon, name="오류"):
         await ctx.send(embed=base)
 
 
-def load(bot: "LaytheBot"):
+def load(bot: LaytheBot):
     bot.load_addons(Error)
 
 
-def unload(bot: "LaytheBot"):
+def unload(bot: LaytheBot):
     bot.unload_addons(Error)

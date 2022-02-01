@@ -28,10 +28,9 @@ from laythe import (
     verification_level_translates,
     verification_desc_translates,
     rtc_region_translates,
+    LaytheBot,
+    LaytheAddonBase
 )
-
-if TYPE_CHECKING:
-    from laythe.bot import LaytheBot
 
 
 INFO_METADATA = {"name": "정보", "description": "다양한 정보를 보여주는 명령어들이에요."}
@@ -196,9 +195,9 @@ class Utils(Addon, name="유틸리티"):
         print("All shards ready.")
 
 
-def load(bot: "LaytheBot"):
+def load(bot: LaytheBot):
     bot.load_addons(Utils)
 
 
-def unload(bot: "LaytheBot"):
+def unload(bot: LaytheBot):
     bot.unload_addons(Utils)

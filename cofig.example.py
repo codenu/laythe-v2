@@ -10,7 +10,6 @@ class Config:
 
     # Bot List
     KBOT_TOKEN: str = ""
-    UBOT_TOKEN: str = ""
 
     # Lavalink
     LAVA_HOST: str = ""

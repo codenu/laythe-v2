@@ -1,45 +1,16 @@
-from typing import TYPE_CHECKING
 from contextlib import suppress
 
-from dico import ApplicationCommandOptionType, Message, GuildMember, User
+from dico import ApplicationCommandOptionType, GuildMember, User
 from dico.exception import BadRequest, NotFound, Forbidden, DicoException
-from dico_command import Addon
 from dico_interaction import slash, option, checks, InteractionContext
-from dico_interaction.exception import CheckFailed
 
-from laythe import has_perm, bot_has_perm, PermissionNotFound
-
-if TYPE_CHECKING:
-    from laythe.bot import LaytheBot
+from laythe import has_perm, bot_has_perm, ManagementAddonBase, LaytheBot
 
 
 PURGE_METADATA = {"name": "정리", "description": "메시지 정리와 관련된 명령어들이에요."}
 
 
-class Manage(Addon, name="관리"):
-    async def addon_interaction_check(self, ctx: InteractionContext):
-        from dico_interaction import InteractionCommand
-
-        cmd: InteractionCommand = self.bot.interaction.get_command(ctx)
-        usage = f"/{cmd.command.name}"
-        if cmd.subcommand_group:
-            usage += f" {cmd.subcommand_group}"
-        if cmd.subcommand:
-            usage += f" {cmd.subcommand}"
-        payload = {"content": f"/{cmd}", "invoker": {"id": ctx.author.id}}
-        self.bot.dispatch("management_command", payload)
-        return bool(ctx.guild_id)
-
-    async def on_addon_interaction_error(
-        self, ctx: InteractionContext, error: Exception
-    ):
-        if isinstance(error, CheckFailed) and not issubclass(
-            type(error), PermissionNotFound
-        ):
-            await ctx.send("❌ 해당 명령어는 DM에서는 사용할 수 없어요.")
-            return True
-        return False
-
+class Manage(ManagementAddonBase, name="관리"):
     @slash(
         **PURGE_METADATA,
         subcommand="개수",
@@ -223,9 +194,9 @@ class Manage(Addon, name="관리"):
             )
 
 
-def load(bot: "LaytheBot"):
+def load(bot: LaytheBot):
     bot.load_addons(Manage)
 
 
-def unload(bot: "LaytheBot"):
+def unload(bot: LaytheBot):
     bot.unload_addons(Manage)

@@ -1,5 +1,3 @@
-import json
-
 from .base import BaseFlag, JSONStrInt
 
 
@@ -15,7 +13,7 @@ class WarnActions(JSONStrInt):
     pass
 
 
-class LaytheSetting:
+class Setting:
     def __init__(self, data: dict):
         self.guild_id: int = data["guild_id"]
         self.accepted: bool = data["accepted"]
@@ -45,7 +43,7 @@ class LaytheSetting:
             "greet_dm": self.greet_dm,
             "bye": self.bye,
             "reward_roles": self.reward_roles.to_str(),
-            "warn_actions": self.warn_actions.to_str(),
+            "warn_actions": self.warn_actions.to_str()
         }
 
 
@@ -63,7 +61,7 @@ class Warn:
             "date": self.date,
             "user_id": self.user_id,
             "mod_id": self.mod_id,
-            "reason": self.reason,
+            "reason": self.reason
         }
 
     @classmethod
@@ -74,6 +72,22 @@ class Warn:
                 "date": date,
                 "user_id": user_id,
                 "mod_id": mod_id,
-                "reason": reason,
+                "reason": reason
             }
         )
+
+
+class Level:
+    def __init__(self, data: dict):
+        self.user_id: int = data["user_id"]
+        self.guild_id: int = data["guild_id"]
+        self.exp: int = data["exp"]
+        self.level: int = data["level"]
+
+    def to_dict(self):
+        return {
+            "user_id": self.user_id,
+            "guild_id": self.guild_id,
+            "exp": self.exp,
+            "level": self.level
+        }
