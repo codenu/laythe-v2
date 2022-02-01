@@ -64,7 +64,9 @@ class LaytheDB(BaseDatabase):
             return [Level(x) for x in resp]
 
     async def request_level(self, guild_id: int, user_id: int) -> Optional[Level]:
-        resp = await self.fetch("SELECT * FROM levels WHERE guild_id=%s AND user_id=%s", (guild_id, user_id))
+        resp = await self.fetch(
+            "SELECT * FROM levels WHERE guild_id=%s AND user_id=%s", (guild_id, user_id)
+        )
         if resp:
             return Level(resp[0])
 
@@ -74,4 +76,6 @@ class LaytheDB(BaseDatabase):
 
         # TODO: better method?
         inject = ", ".join([f"{x}=%s" for x in data.keys()])
-        await self.execute(f"UPDATE levels SET {inject} WHERE guild_id=%s", (*data.values(), guild_id))
+        await self.execute(
+            f"UPDATE levels SET {inject} WHERE guild_id=%s", (*data.values(), guild_id)
+        )

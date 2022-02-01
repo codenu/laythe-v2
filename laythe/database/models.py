@@ -43,7 +43,7 @@ class Setting:
             "greet_dm": self.greet_dm,
             "bye": self.bye,
             "reward_roles": self.reward_roles.to_str(),
-            "warn_actions": self.warn_actions.to_str()
+            "warn_actions": self.warn_actions.to_str(),
         }
 
 
@@ -61,7 +61,7 @@ class Warn:
             "date": self.date,
             "user_id": self.user_id,
             "mod_id": self.mod_id,
-            "reason": self.reason
+            "reason": self.reason,
         }
 
     @classmethod
@@ -72,7 +72,7 @@ class Warn:
                 "date": date,
                 "user_id": user_id,
                 "mod_id": mod_id,
-                "reason": reason
+                "reason": reason,
             }
         )
 
@@ -89,5 +89,5 @@ class Level:
             "user_id": self.user_id,
             "guild_id": self.guild_id,
             "exp": self.exp,
-            "level": self.level
+            "level": self.level,
         }

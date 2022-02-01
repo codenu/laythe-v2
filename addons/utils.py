@@ -29,7 +29,7 @@ from laythe import (
     verification_desc_translates,
     rtc_region_translates,
     LaytheBot,
-    LaytheAddonBase
+    LaytheAddonBase,
 )
 
 
