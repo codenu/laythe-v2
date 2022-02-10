@@ -1,7 +1,7 @@
 from contextlib import suppress
 from datetime import datetime
 
-from dico import ApplicationCommandOptionType, GuildMember, Embed
+from dico import ApplicationCommandOptionType, GuildMember, Embed, ActionRow, SelectMenu, SelectOption
 from dico.exception import HTTPError
 from dico_interaction import (
     slash,
@@ -50,7 +50,7 @@ class Warn(DMNotAllowedAddonBase, name="경고"):
             reason=reason,
         )
         await self.bot.database.add_guild_warn(data)
-        embed = Embed(title="유저 경고 추가", color=EmbedColor.NEGATIVE)
+        embed = Embed(title="유저 경고 추가", color=EmbedColor.NEGATIVE, timestamp=ctx.id.timestamp)
         embed.add_field(
             name="경고 대상",
             value=f"{user.mention} (`{user.user}` (ID: `{user.id}`))",
@@ -101,19 +101,50 @@ class Warn(DMNotAllowedAddonBase, name="경고"):
         description="경고를 확인할 유저",
         required=False,
     )
-    async def warn_list(self, ctx: InteractionContext, user: GuildMember):
+    async def warn_list(self, ctx: InteractionContext, user: GuildMember = None):
         await ctx.defer()
+        user = user or ctx.member
+        warns = await self.bot.database.request_guild_warns(int(ctx.guild_id), int(user))
+        if not warns:
+            return await ctx.send("❌ 경고 기록을 찾지 못했어요.")
+        options = [SelectOption(label=f"경고 ID #{x.date}", value=str(x.date)) for x in (x for i, x in enumerate(warns) if i < (25 if len(warns) == 25 else 24))]
+        if len(warns) > 25:
+            options.append(SelectOption(label="다음 페이지", value="npage24", emoji="➡"))
+        menu = SelectMenu(custom_id="warn", options=options)
+        row = ActionRow(menu)
+        await ctx.send(f"ℹ 총 `{len(warns)}`개의 경고 기록을 찾았어요.", components=[row])
 
     @component_callback("warn")
     async def warn_show(self, ctx: InteractionContext):
-        if ctx.author.id != ctx.message.interaction.user.id:
-            return await ctx.send("❌ 이 버튼은 사용하실 수 없어요.")
+        author = ctx.message.interaction.user
+        if ctx.author.id != author.id:
+            with suppress(HTTPError):
+                row = ctx.message.components[0]
+                row.components[0].disabled = True
+                await ctx.message.edit(components=[row])
+            return await ctx.send("❌ 이 목록은 사용하실 수 없어요.", ephemeral=True)
+        value = ctx.data.values[0]
+        if value.startswith("npage"):
+            await ctx.defer(update_message=True)
+            page = int(value.lstrip("npage")) + 1
+            warns = await self.bot.database.request_guild_warns(int(ctx.guild_id), int(author))
+            if not warns:
+                return await ctx.send("❌ 해당 유저의 경고 목록을 더이상 찾을 수 없어요. 혹시 이 목록이 생성된 지 오래됐나요? 명령어를 재실행해주세요.", ephemeral=True)
+            after_warns = warns[page:]
+            if not after_warns:
+                after_warns = warns
+            options = [SelectOption(label=f"경고 ID #{x.date}", value=str(x.date)) for x in (x for i, x in enumerate(after_warns) if i < (25 if len(after_warns) == 25 else 24))]
+            if len(after_warns) > 25:
+                options.append(SelectOption(label="다음 페이지", value=f"npage{page+23}", emoji="➡"))
+            row = ctx.message.components[0]
+            row[0].options = options
+            return await ctx.send(components=[row], update_message=True)
         await ctx.defer(ephemeral=True)
-        warn_id = int(ctx.data.custom_id.lstrip("warn"))
+        warn_id = int(value)
         data = await self.bot.database.request_guild_warn(int(ctx.guild_id), warn_id)
         if not data:
             return await ctx.send(
-                "❌ 해당 경고를 찾을 수 없어요. 혹시 이 버튼이 생성된 지 오래됐나요? 명령어를 재실행해주세요."
+                "❌ 해당 경고를 찾을 수 없어요. 혹시 이 목록이 생성된 지 오래됐나요? 명령어를 재실행해주세요."
             )
 
         user = None

@@ -31,9 +31,16 @@ permission_translates = {
     "manage_roles": "역할 관리하기",
     "manage_permissions": "권한 관리하기",
     "manage_webhooks": "웹후크 관리하기",
-    "manage_emojis": "이모티콘 및 스티커 관리",
-    "use_slash_commands": "빗금 명령어 사용",
+    "manage_emojis_and_stickers": "이모티콘 및 스티커 관리",
+    "use_application_commands": "애플리케이션 명령어 사용",
     "request_to_speak": "발언권 요청하기",
+    "send_messages_in_thread": "스레드에서 메시지 보내기",
+    "create_public_threads": "공개 스레드 만들기",
+    "create_private_threads": "비공개 스레드 만들기",
+    "manage_threads": "스레드 관리하기",
+    "start_embedded_activities": "활동 시작하기",
+    "moderate_members": "타임아웃 멤버",
+    "manage_events": "이벤트 관리"
 }
 
 
