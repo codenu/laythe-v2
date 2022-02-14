@@ -11,13 +11,17 @@ class LaytheDB(BaseDatabase):
     MAX_CACHE_VALID = 60 * 5  # 5 min
 
     async def on_cache_load(self):
-        await self.cache.execute("""CREATE TABLE IF NOT EXISTS settings_cache
+        await self.cache.execute(
+            """CREATE TABLE IF NOT EXISTS settings_cache
         ("guild_id" INTEGER NOT NULL PRIMARY KEY,
          "data" TEXT NOT NULL,
-         "last_update_at" INTEGER NOT NULL)""")
+         "last_update_at" INTEGER NOT NULL)"""
+        )
 
     async def maybe_cache(self, key: str, value: Any, table: str) -> Optional[Any]:
-        resp = await self.cache.fetch(f"""SELECT * FROM {table}_cache WHERE {key}=?""", (value,))
+        resp = await self.cache.fetch(
+            f"""SELECT * FROM {table}_cache WHERE {key}=?""", (value,)
+        )
         if not resp:
             return
         resp = resp[0]
@@ -27,10 +31,14 @@ class LaytheDB(BaseDatabase):
         return resp["data"]
 
     async def update_cache(self, value: Any, table: str, data: Any):
-        await self.cache.execute(f"""INSERT OR REPLACE INTO {table}_cache VALUES(?, ?, ?)""",
-                                 (value, data, time.time()))
+        await self.cache.execute(
+            f"""INSERT OR REPLACE INTO {table}_cache VALUES(?, ?, ?)""",
+            (value, data, time.time()),
+        )
 
-    async def request_guild_setting(self, guild_id: int, bypass_cache: bool = False) -> Optional[Setting]:
+    async def request_guild_setting(
+        self, guild_id: int, bypass_cache: bool = False
+    ) -> Optional[Setting]:
         if not bypass_cache:
             maybe_cache = await self.maybe_cache("guild_id", guild_id, "settings")
             if maybe_cache:

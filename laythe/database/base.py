@@ -42,7 +42,13 @@ class BaseDatabase:
 
     @classmethod
     async def login(
-        cls, host: str, port: int, login_id: str, login_pw: str, db_name: str, use_cache: bool = True
+        cls,
+        host: str,
+        port: int,
+        login_id: str,
+        login_pw: str,
+        db_name: str,
+        use_cache: bool = True,
     ):
         connection = dict(
             host=host,

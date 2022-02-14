@@ -109,37 +109,74 @@ class Manage(ManagementAddonBase, name="관리"):
         )
         await ctx.send(f"✅ 성공적으로 <@{int(user)}>이/가 전송한 메시지 `{len(msgs)}`개를 정리했어요.")
 
-    @slash("뮤트", description="선택한 유저를 뮤트하거나 타임아웃을 적용해요.", connector={"유저": "user", "사유": "reason", "타임아웃": "use_timeout", "기간": "timeout"})
-    @option(ApplicationCommandOptionType.USER,
-            name="유저",
-            description="뮤트를 하거나 타임아웃을 활성화할 유저",
-            required=True)
-    @option(ApplicationCommandOptionType.STRING,
-            name="사유", description="뮤트 또는 타임아웃의 사유", required=False)
-    @option(ApplicationCommandOptionType.BOOLEAN,
-            name="타임아웃",
-            description="타임아웃을 사용할 지의 여부, 만약에 뮤트 역할이 설정되지 않았다면 타임아웃이 강제됩니다.",
-            required=False)
-    @option(ApplicationCommandOptionType.INTEGER,
-            name="기간",
-            description="타임아웃을 적용할 기간 (최대 7일)",
-            required=False)
-    @checks(has_perm(manage_roles=True, moderate_members=True), bot_has_perm(manage_roles=True, moderate_members=True))
-    async def mute(self, ctx: InteractionContext, user: GuildMember, reason: str = None, use_timeout: bool = False, timeout: int = 0):
+    @slash(
+        "뮤트",
+        description="선택한 유저를 뮤트하거나 타임아웃을 적용해요.",
+        connector={
+            "유저": "user",
+            "사유": "reason",
+            "타임아웃": "use_timeout",
+            "기간": "timeout",
+        },
+    )
+    @option(
+        ApplicationCommandOptionType.USER,
+        name="유저",
+        description="뮤트를 하거나 타임아웃을 활성화할 유저",
+        required=True,
+    )
+    @option(
+        ApplicationCommandOptionType.STRING,
+        name="사유",
+        description="뮤트 또는 타임아웃의 사유",
+        required=False,
+    )
+    @option(
+        ApplicationCommandOptionType.BOOLEAN,
+        name="타임아웃",
+        description="타임아웃을 사용할 지의 여부, 만약에 뮤트 역할이 설정되지 않았다면 타임아웃이 강제됩니다.",
+        required=False,
+    )
+    @option(
+        ApplicationCommandOptionType.INTEGER,
+        name="기간",
+        description="타임아웃을 적용할 기간 (최대 7일)",
+        required=False,
+    )
+    @checks(
+        has_perm(manage_roles=True, moderate_members=True),
+        bot_has_perm(manage_roles=True, moderate_members=True),
+    )
+    async def mute(
+        self,
+        ctx: InteractionContext,
+        user: GuildMember,
+        reason: str = None,
+        use_timeout: bool = False,
+        timeout: int = 0,
+    ):
         if use_timeout and timeout < 1:
-            return await ctx.send("❌ 타임아웃을 사용하는 경우 `기간` 값을 1 이상 7 이하로 설정해주세요.", ephemeral=True)
+            return await ctx.send(
+                "❌ 타임아웃을 사용하는 경우 `기간` 값을 1 이상 7 이하로 설정해주세요.", ephemeral=True
+            )
         elif not use_timeout and timeout:
             return await ctx.send("❌ 뮤트 역할을 사용하는 경우 아직 기간을 설정하실 수 없어요.", ephemeral=True)
         await ctx.defer()
         if use_timeout:
             end_at = datetime.utcnow() + timedelta(days=timeout)
-            await self.bot.modify_guild_member(ctx.guild_id, user, communication_disabled_until=end_at, reason=reason)
+            await self.bot.modify_guild_member(
+                ctx.guild_id, user, communication_disabled_until=end_at, reason=reason
+            )
         else:
             data = await self.bot.database.request_guild_setting(int(ctx.guild_id))
             if not data.mute_role:
                 return await ctx.send("❌ 뮤트 역할이 존재하지 않아요. 먼저 뮤트 역할을 설정해주세요.")
-            await self.bot.add_guild_member_role(ctx.guild_id, user, data.mute_role, reason=reason)
-        await ctx.send(f"✅ 성공적으로 <@{int(user)}>{'에게 타임아웃을 적용했어요.' if use_timeout else '를 뮤트했어요.'}")
+            await self.bot.add_guild_member_role(
+                ctx.guild_id, user, data.mute_role, reason=reason
+            )
+        await ctx.send(
+            f"✅ 성공적으로 <@{int(user)}>{'에게 타임아웃을 적용했어요.' if use_timeout else '를 뮤트했어요.'}"
+        )
 
     @slash("추방", description="선택한 유저를 추방해요.", connector={"유저": "user", "사유": "reason"})
     @option(

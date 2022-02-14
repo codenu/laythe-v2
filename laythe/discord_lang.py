@@ -40,7 +40,7 @@ permission_translates = {
     "manage_threads": "스레드 관리하기",
     "start_embedded_activities": "활동 시작하기",
     "moderate_members": "타임아웃 멤버",
-    "manage_events": "이벤트 관리"
+    "manage_events": "이벤트 관리",
 }
 
 
