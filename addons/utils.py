@@ -36,9 +36,7 @@ from laythe import (
 INFO_METADATA = {"name": "정보", "description": "다양한 정보를 보여주는 명령어들이에요."}
 
 
-class Utils(Addon, name="유틸리티"):
-    bot: "LaytheBot"
-
+class Utils(LaytheAddonBase, name="유틸리티"):
     @slash("핑", description="현재 봇의 레이턴시를 알려드려요.")
     async def ping(self, ctx: InteractionContext):
         await ctx.send(f"🏓 퐁! (`{round(self.bot.ping)}`ms)")

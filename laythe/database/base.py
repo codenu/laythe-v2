@@ -1,17 +1,48 @@
 import json
 
 import aiomysql
+import aiosqlite
 
 from typing import Dict, Optional
 
 
+class Cache:
+    def __init__(self, db: aiosqlite.Connection):
+        self.db = db
+
+    @classmethod
+    async def create(cls):
+        db = await aiosqlite.connect(":memory:")
+        db.row_factory = aiosqlite.Row
+        return cls(db)
+
+    async def close(self):
+        await self.db.close()
+
+    async def execute(self, sql: str, param: iter = None):
+        await self.db.execute(sql, param)
+        await self.db.commit()
+
+    async def execute_many(self, sql: str, params: iter = None):
+        await self.db.executemany(sql, params)
+        await self.db.commit()
+
+    async def fetch(self, sql: str, param: iter = None, return_raw=False) -> list:
+        async with self.db.execute(sql, param) as cur:
+            rows = await cur.fetchall()
+            if not return_raw:
+                return [dict(x) for x in rows]
+            return [x for x in rows]
+
+
 class BaseDatabase:
-    def __init__(self, pool: aiomysql.Pool):
+    def __init__(self, pool: aiomysql.Pool, cache: Cache):
         self.pool = pool
+        self.cache = cache
 
     @classmethod
     async def login(
-        cls, host: str, port: int, login_id: str, login_pw: str, db_name: str
+        cls, host: str, port: int, login_id: str, login_pw: str, db_name: str, use_cache: bool = True
     ):
         connection = dict(
             host=host,
@@ -22,7 +53,14 @@ class BaseDatabase:
             db=db_name,
         )
         pool = await aiomysql.create_pool(**connection, autocommit=True)
-        return cls(pool)
+        cache = (await Cache.create()) if use_cache else None
+        self = cls(pool, cache)
+        if use_cache:
+            await self.on_cache_load()
+        return self
+
+    async def on_cache_load(self):
+        pass
 
     async def close(self):
         if self.pool:

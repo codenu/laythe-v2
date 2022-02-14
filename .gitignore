@@ -8,3 +8,4 @@ external_api
 dummy.json
 test.py
 venv
+addons/_level.py

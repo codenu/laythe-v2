@@ -1,13 +1,43 @@
-from typing import Optional, List
+import time
+import json
+
+from typing import Optional, List, Any
 
 from .base import BaseDatabase
 from .models import Setting, Warn, Level
 
 
 class LaytheDB(BaseDatabase):
-    async def request_guild_setting(self, guild_id: int) -> Optional[Setting]:
+    MAX_CACHE_VALID = 60 * 5  # 5 min
+
+    async def on_cache_load(self):
+        await self.cache.execute("""CREATE TABLE IF NOT EXISTS settings_cache
+        ("guild_id" INTEGER NOT NULL PRIMARY KEY,
+         "data" TEXT NOT NULL,
+         "last_update_at" INTEGER NOT NULL)""")
+
+    async def maybe_cache(self, key: str, value: Any, table: str) -> Optional[Any]:
+        resp = await self.cache.fetch(f"""SELECT * FROM {table}_cache WHERE {key}=?""", (value,))
+        if not resp:
+            return
+        resp = resp[0]
+        last_update_at = resp["last_update_at"]
+        if time.time() - last_update_at > self.MAX_CACHE_VALID:
+            return
+        return resp["data"]
+
+    async def update_cache(self, value: Any, table: str, data: Any):
+        await self.cache.execute(f"""INSERT OR REPLACE INTO {table}_cache VALUES(?, ?, ?)""",
+                                 (value, data, time.time()))
+
+    async def request_guild_setting(self, guild_id: int, bypass_cache: bool = False) -> Optional[Setting]:
+        if not bypass_cache:
+            maybe_cache = await self.maybe_cache("guild_id", guild_id, "settings")
+            if maybe_cache:
+                return Setting(json.loads(maybe_cache))
         resp = await self.fetch("SELECT * FROM settings WHERE guild_id=%s", (guild_id,))
         if resp:
+            await self.update_cache(guild_id, "settings", json.dumps(resp[0]))
             return Setting(resp[0])
 
     async def update_guild_setting(self, data: Setting):
