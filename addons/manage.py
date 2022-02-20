@@ -65,6 +65,7 @@ class Manage(ManagementAddonBase, name="관리"):
             return await ctx.send("❌ 삭제할 메시지를 가져오지 못했어요. 2주 이내에 전송된 메시지만 가져울 수 있어요.")
         await self.bot.bulk_delete_messages(
             ctx.channel_id,
+            msg_id,
             *msgs,
             reason=f"유저 ID가 `{ctx.author.id}`인 관리자가 `/정리 메시지 메시지:{msg_id}` 명령어를 실행함.",
         )

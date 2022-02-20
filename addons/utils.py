@@ -19,9 +19,12 @@ from dico_command import Addon, on
 from dico_interaction import (
     slash,
     option,
+checks,
     InteractionContext,
     __version__ as interaction_version,
 )
+
+from config import Config
 
 from laythe import (
     utils,
@@ -30,6 +33,7 @@ from laythe import (
     rtc_region_translates,
     LaytheBot,
     LaytheAddonBase,
+has_perm, bot_has_perm
 )
 
 
@@ -100,7 +104,13 @@ class Utils(LaytheAddonBase, name="유틸리티"):
             emoji="<:github:872322613987389441>",
             url="https://github.com/codenu/laythe-v2",
         )
-        row = ActionRow(codenu, github)
+        privacy = Button(
+            style=ButtonStyles.LINK,
+            label="개인정보 취급 방침",
+            emoji="📃",
+            url="https://codenu.github.io/privacyPolicy.html"
+        )
+        row = ActionRow(codenu, github, privacy)
         await ctx.send(embed=embed, components=[row])
 
     @slash(
@@ -180,6 +190,13 @@ class Utils(LaytheAddonBase, name="유틸리티"):
         embed.set_thumbnail(url=guild.icon_url())
         embed.set_image(url=guild.banner_url())
         await ctx.send(embed=embed)
+
+    @slash("구독", description="CodeNU 봇 공지에 구독해요.")
+    @checks(has_perm(manage_webhooks=True), bot_has_perm(manage_webhooks=True))
+    async def subscribe(self, ctx: InteractionContext):
+        await ctx.defer()
+        await self.bot.follow_news_channel(Config.NOTICE_CHANNEL, ctx.channel_id)
+        await ctx.send("✅ 성공적으로 CodeNU 레이테 공지 채널에 구독했어요.")
 
     @on("ready")
     async def on_ready(self, ready: Ready):

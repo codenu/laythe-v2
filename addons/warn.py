@@ -134,10 +134,12 @@ class Warn(DMNotAllowedAddonBase, name="경고"):
     async def warn_show(self, ctx: InteractionContext):
         author = ctx.message.interaction.user
         if ctx.author.id != author.id:
+            """
             with suppress(HTTPError):
                 row = ctx.message.components[0]
                 row.components[0].disabled = True
                 await ctx.message.edit(components=[row])
+            """
             return await ctx.send("❌ 이 목록은 사용하실 수 없어요.", ephemeral=True)
         value = ctx.data.values[0]
         if value.startswith("npage"):

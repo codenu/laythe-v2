@@ -83,6 +83,7 @@ class Level:
         self.guild_id: int = data["guild_id"]
         self.exp: int = data["exp"]
         self.level: int = data["level"]
+        self.rank: int = data.get("_rank", 0)
 
     def to_dict(self):
         return {
@@ -91,3 +92,14 @@ class Level:
             "exp": self.exp,
             "level": self.level,
         }
+
+    @classmethod
+    def create(cls, user_id: int, guild_id: int, exp: int, level: int):
+        return cls(
+            {
+                "user_id": user_id,
+                "guild_id": guild_id,
+                "exp": exp,
+                "level": level,
+            }
+        )

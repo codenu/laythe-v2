@@ -53,7 +53,6 @@ def has_perm(*perms: Union[int, str], **kwargs: bool):
         for x in perms:
             if not perms_has.has(x):
                 missing.append(x)
-        print(missing)
         if missing:
             raise PermissionNotFound(*perms)
         else:
