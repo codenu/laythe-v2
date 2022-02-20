@@ -45,11 +45,18 @@ def parse_second_with_date(time: int):
     return parsed_time
 
 
-def create_index_bar(length: float, now: float, bar_text: str = "=", icon_text: str = "🔴", after_text: str = "=", size: int = 30):
+def create_index_bar(
+    length: float,
+    now: float,
+    bar_text: str = "=",
+    icon_text: str = "🔴",
+    after_text: str = "=",
+    size: int = 30,
+):
     percent = now / length
     pos = round(percent * size)
     base = [bar_text if x <= pos else after_text for x in range(size)]
-    base[pos if pos <= size-1 else -1] = icon_text
+    base[pos if pos <= size - 1 else -1] = icon_text
     return f"{''.join(base)}"
 
 
@@ -60,4 +67,4 @@ def kstnow() -> datetime.datetime:
 def restrict_length(text: str, max_length: int) -> str:
     if not text:
         return ""
-    return ("..." + text[:max_length-3]) if len(text) > max_length else text
+    return ("..." + text[: max_length - 3]) if len(text) > max_length else text

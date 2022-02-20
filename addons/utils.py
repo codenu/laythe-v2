@@ -19,7 +19,7 @@ from dico_command import Addon, on
 from dico_interaction import (
     slash,
     option,
-checks,
+    checks,
     InteractionContext,
     __version__ as interaction_version,
 )
@@ -33,7 +33,8 @@ from laythe import (
     rtc_region_translates,
     LaytheBot,
     LaytheAddonBase,
-has_perm, bot_has_perm
+    has_perm,
+    bot_has_perm,
 )
 
 
@@ -108,7 +109,7 @@ class Utils(LaytheAddonBase, name="유틸리티"):
             style=ButtonStyles.LINK,
             label="개인정보 취급 방침",
             emoji="📃",
-            url="https://codenu.github.io/privacyPolicy.html"
+            url="https://codenu.github.io/privacyPolicy.html",
         )
         row = ActionRow(codenu, github, privacy)
         await ctx.send(embed=embed, components=[row])

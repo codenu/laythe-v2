@@ -3,7 +3,13 @@ from logging import Logger
 
 from dico import AllowedMentions, Intents
 from dico_command import Bot, Message
-from dico_interaction import InteractionClient as InteractionBase, InteractionContext, InteractionCommand, ComponentCallback, AutoComplete
+from dico_interaction import (
+    InteractionClient as InteractionBase,
+    InteractionContext,
+    InteractionCommand,
+    ComponentCallback,
+    AutoComplete,
+)
 
 from config import Config
 
@@ -11,7 +17,11 @@ from .database import LaytheDB
 
 
 class InteractionClient(InteractionBase):
-    async def handle_interaction(self, target: Union[InteractionCommand, ComponentCallback, AutoComplete], interaction: InteractionContext):
+    async def handle_interaction(
+        self,
+        target: Union[InteractionCommand, ComponentCallback, AutoComplete],
+        interaction: InteractionContext,
+    ):
         if isinstance(target, InteractionCommand) and not interaction.guild_id:
             return await interaction.send("❌ 명령어는 DM에서 사용할 수 없어요.")
         return await super().handle_interaction(target, interaction)

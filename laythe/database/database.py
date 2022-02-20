@@ -17,7 +17,9 @@ class LaytheDB(BaseDatabase):
          "data" TEXT NOT NULL,
          "last_update_at" INTEGER NOT NULL)"""
         )
-        await self.cache.execute("""CREATE TABLE IF NOT EXISTS level_cache ("guild_id" INTEGER NOT NULL, "user_id"INTEGER NOT NULL, "last_message_timestamp"INTEGER NOT NULL)""")
+        await self.cache.execute(
+            """CREATE TABLE IF NOT EXISTS level_cache ("guild_id" INTEGER NOT NULL, "user_id"INTEGER NOT NULL, "last_message_timestamp"INTEGER NOT NULL)"""
+        )
 
     async def maybe_cache(self, key: str, value: Any, table: str) -> Optional[Any]:
         resp = await self.cache.fetch(
@@ -98,18 +100,24 @@ class LaytheDB(BaseDatabase):
         )
 
     async def request_guild_rank(self, guild_id: int) -> Optional[List[Level]]:
-        resp = await self.fetch("SELECT *, RANK() OVER (PARTITION BY guild_id ORDER BY exp DESC) AS _rank FROM levels WHERE guild_id=%s ORDER BY exp DESC", (guild_id,))
+        resp = await self.fetch(
+            "SELECT *, RANK() OVER (PARTITION BY guild_id ORDER BY exp DESC) AS _rank FROM levels WHERE guild_id=%s ORDER BY exp DESC",
+            (guild_id,),
+        )
         if resp:
             return [Level(x) for x in resp]
 
     async def request_level(self, guild_id: int, user_id: int) -> Optional[Level]:
         resp = await self.fetch(
-            "SELECT * FROM (SELECT *, RANK() OVER (PARTITION BY guild_id ORDER BY exp DESC) AS _rank FROM levels WHERE guild_id=%s) _levels WHERE user_id=%s", (guild_id, user_id)
+            "SELECT * FROM (SELECT *, RANK() OVER (PARTITION BY guild_id ORDER BY exp DESC) AS _rank FROM levels WHERE guild_id=%s) _levels WHERE user_id=%s",
+            (guild_id, user_id),
         )
         if resp:
             return Level(resp[0])
         else:
-            await self.execute("INSERT INTO levels VALUES (%s, %s, %s, %s)", (user_id, guild_id, 0, 0))
+            await self.execute(
+                "INSERT INTO levels VALUES (%s, %s, %s, %s)", (user_id, guild_id, 0, 0)
+            )
             return Level.create(user_id, guild_id, 0, 0)
 
     async def update_level(self, data: Level):
@@ -126,13 +134,27 @@ class LaytheDB(BaseDatabase):
         param = [guild_id]
         if user_id:
             param.append(user_id)
-        await self.execute(f"DELETE FROM levels WHERE guild_id=%s{' AND user_id=%s' if user_id else ''}", tuple(param))
+        await self.execute(
+            f"DELETE FROM levels WHERE guild_id=%s{' AND user_id=%s' if user_id else ''}",
+            tuple(param),
+        )
 
-    async def get_last_message_timestamp(self, guild_id: int, user_id: int) -> Optional[int]:
-        resp = await self.cache.fetch("SELECT last_message_timestamp FROM level_cache WHERE guild_id=? AND user_id=?", (guild_id, user_id))
+    async def get_last_message_timestamp(
+        self, guild_id: int, user_id: int
+    ) -> Optional[int]:
+        resp = await self.cache.fetch(
+            "SELECT last_message_timestamp FROM level_cache WHERE guild_id=? AND user_id=?",
+            (guild_id, user_id),
+        )
         if resp:
             return resp[0]["last_message_timestamp"]
 
     async def update_last_message_timestamp(self, guild_id: int, user_id: int):
-        await self.cache.execute("DELETE FROM level_cache WHERE guild_id=? AND user_id=?", (guild_id, user_id))
-        await self.cache.execute("INSERT INTO level_cache VALUES (?, ?, ?)", (guild_id, user_id, int(time.time())))
+        await self.cache.execute(
+            "DELETE FROM level_cache WHERE guild_id=? AND user_id=?",
+            (guild_id, user_id),
+        )
+        await self.cache.execute(
+            "INSERT INTO level_cache VALUES (?, ?, ?)",
+            (guild_id, user_id, int(time.time())),
+        )
