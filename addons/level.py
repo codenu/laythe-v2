@@ -141,7 +141,7 @@ class Level(LaytheAddonBase, name="레벨"):
                 return
             reward_roles = setting.reward_roles.as_dict()
             for k, v in sorted(reward_roles.items(), key=lambda n: n[0]):
-                if level >= int(k):
+                if current.level >= int(k):
                     if v in message.member.role_ids:
                         continue
                     with suppress(HTTPError):

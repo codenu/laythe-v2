@@ -153,6 +153,9 @@ class JSONStrInt:
     def __setitem__(self, key, value):
         self.__data[str(key)] = int(value)
 
+    def __delitem__(self, key):
+        del self.__data[str(key)]
+
     def __bool__(self):
         return bool(self.__data)
 
