@@ -66,11 +66,13 @@ class Utils(LaytheAddonBase, name="유틸리티"):
             timestamp=ctx.id.timestamp,
         )
         embed.add_field(name="서버 수", value=f"`{self.bot.guild_count}`개", inline=False)
+        """
         embed.add_field(
             name="유저 수",
             value=f"`{self.bot.cache.get_storage('user').size}`명",
             inline=False,
         )
+        """
         embed.add_field(
             name="라이브러리 버전",
             value=f"<:python:815496209682006036> Python `{platform.python_version()}` | "

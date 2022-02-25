@@ -39,6 +39,11 @@ class LaytheDB(BaseDatabase):
             (value, data, int(time.time())),
         )
 
+    async def reset_cache(self, key: str, value: Any, table: str):
+        await self.cache.execute(
+            f"""DELETE FROM {table}_cache WHERE {key}=?""", (value,)
+        )
+
     async def request_guild_setting(
         self, guild_id: int, bypass_cache: bool = False
     ) -> Optional[Setting]:

@@ -72,7 +72,7 @@ class Warn(DMNotAllowedAddonBase, name="경고"):
         )
         embed.add_field(name="경고 ID", value=f"`{data.date}`", inline=False)
         embed.add_field(name="경고 사유", value=reason, inline=False)
-        # TODO: execute guild log
+        await self.bot.execute_log(self.bot.get_guild(ctx.guild_id), embed=embed)
         await ctx.send("✅ 성공적으로 경고를 추가했어요. 자세한 내용은 다음을 참고해주세요.", embed=embed)
 
     @slash(

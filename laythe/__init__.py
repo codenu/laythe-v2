@@ -1,5 +1,5 @@
 from . import utils
-from .addon import LaytheAddonBase, DMNotAllowedAddonBase, ManagementAddonBase
+from .addon import LaytheAddonBase, DMNotAllowedAddonBase
 from .bot import LaytheBot
 from .database import Warn, Level, Setting
 from .discord_lang import *

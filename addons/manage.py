@@ -5,13 +5,13 @@ from dico import ApplicationCommandOptionType, GuildMember, User
 from dico.exception import BadRequest, NotFound, Forbidden, DicoException
 from dico_interaction import slash, option, checks, InteractionContext
 
-from laythe import has_perm, bot_has_perm, ManagementAddonBase, LaytheBot
+from laythe import has_perm, bot_has_perm, DMNotAllowedAddonBase, LaytheBot
 
 
 PURGE_METADATA = {"name": "정리", "description": "메시지 정리와 관련된 명령어들이에요."}
 
 
-class Manage(ManagementAddonBase, name="관리"):
+class Manage(DMNotAllowedAddonBase, name="관리"):
     @slash(
         **PURGE_METADATA,
         subcommand="개수",
@@ -39,6 +39,9 @@ class Manage(ManagementAddonBase, name="관리"):
             reason=f"유저 ID가 `{ctx.author.id}`인 관리자가 `/정리 개수 개수:{count}` 명령어를 실행함.",
         )
         await ctx.send(f"✅ 성공적으로 메시지 `{count}`개를 정리했어요.")
+
+        # TODO: make this automatic
+        self.bot.dispatch("management_command", ctx)
 
     @slash(
         **PURGE_METADATA,
@@ -69,7 +72,9 @@ class Manage(ManagementAddonBase, name="관리"):
             *msgs,
             reason=f"유저 ID가 `{ctx.author.id}`인 관리자가 `/정리 메시지 메시지:{msg_id}` 명령어를 실행함.",
         )
-        await ctx.send(f"✅ 성공적으로 `{msg_id}` 부터의 메시지 `{len(msgs)}`개를 정리했어요.")
+        await ctx.send(f"✅ 성공적으로 `{msg_id}` 부터의 메시지 `{len(msgs)+1}`개를 정리했어요.")
+
+        self.bot.dispatch("management_command", ctx)
 
     @slash(
         **PURGE_METADATA,
@@ -109,6 +114,8 @@ class Manage(ManagementAddonBase, name="관리"):
             reason=f"유저 ID가 `{ctx.author.id}`인 관리자가 `/정리 유저 유저:{user} 범위:{search_range}` 명령어를 실행함.",
         )
         await ctx.send(f"✅ 성공적으로 <@{int(user)}>이/가 전송한 메시지 `{len(msgs)}`개를 정리했어요.")
+
+        self.bot.dispatch("management_command", ctx)
 
     @slash(
         "뮤트",
@@ -179,6 +186,8 @@ class Manage(ManagementAddonBase, name="관리"):
             f"✅ 성공적으로 <@{int(user)}>{'에게 타임아웃을 적용했어요.' if use_timeout else '를 뮤트했어요.'}"
         )
 
+        self.bot.dispatch("management_command", ctx)
+
     @slash("추방", description="선택한 유저를 추방해요.", connector={"유저": "user", "사유": "reason"})
     @option(
         ApplicationCommandOptionType.USER,
@@ -200,6 +209,8 @@ class Manage(ManagementAddonBase, name="관리"):
             await ctx.send(
                 f"✅ 성공적으로 <@{int(user)}>(`{user_as}` | ID: `{int(user)}`)을/를 추방했어요."
             )
+
+            self.bot.dispatch("management_command", ctx)
 
     @slash(
         "차단",
@@ -263,6 +274,8 @@ class Manage(ManagementAddonBase, name="관리"):
             await ctx.send(
                 f"✅ 성공적으로 <@{int(user)}>(`유저를 찾지 못함` | ID: `{int(user)}`)을/를 차단했어요. (사유: {reason})"
             )
+
+            self.bot.dispatch("management_command", ctx)
 
 
 def load(bot: LaytheBot):

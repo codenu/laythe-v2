@@ -1,7 +1,9 @@
+from contextlib import suppress
 from typing import Union
 from logging import Logger
 
-from dico import AllowedMentions, Intents
+from dico import AllowedMentions, Intents, Guild
+from dico.exception import HTTPError
 from dico_command import Bot, Message
 from dico_interaction import (
     InteractionClient as InteractionBase,
@@ -33,6 +35,7 @@ class LaytheBot(Bot):
 
     def __init__(self, *, logger: Logger):
         intents = Intents.no_privileged()
+        intents.guild_members = True
         super().__init__(
             Config.TOKEN,
             self.get_prefix,
@@ -65,3 +68,21 @@ class LaytheBot(Bot):
             return [f"<@{self.user.id}> ", f"<@!{self.user.id}> "]
         else:
             return [f"<@{self.user.id}>", f"<@!{self.user.id}>"]
+
+    async def execute_log(self, guild: Guild, **kwargs):
+        setting = await self.database.request_guild_setting(int(guild))
+        if not setting.log_channel:
+            return
+        with suppress(HTTPError):  # ignore sending failure
+            # TODO: use cache?
+            webhooks = await self.request_channel_webhooks(setting.log_channel)
+            filtered = [
+                *filter(lambda w: w.user == self.user and w.name == "서버 로깅", webhooks)
+            ]
+            if not filtered:
+                webhook = await self.create_webhook(setting.log_channel, name="서버 로깅")
+            else:
+                webhook = webhooks[0]
+            kwargs["username"] = guild.name
+            kwargs["avatar_url"] = guild.icon_url()
+            return await webhook.execute(**kwargs)
