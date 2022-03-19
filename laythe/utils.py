@@ -1,6 +1,16 @@
 import datetime
 
+from typing import List, Dict, Optional
+
+from dico import Overwrite, PermissionFlags, Snowflake
 from dico.utils import rgb
+
+
+permission_names = {
+    getattr(PermissionFlags, x): x.lower()
+    for x in dir(PermissionFlags)
+    if isinstance(getattr(PermissionFlags, x), int)
+}
 
 
 class EmbedColor:
@@ -68,3 +78,26 @@ def restrict_length(text: str, max_length: int) -> str:
     if not text:
         return ""
     return ("..." + text[: max_length - 3]) if len(text) > max_length else text
+
+
+def to_readable_bool(tf: bool):
+    return "네" if tf else "아니요"
+
+
+def overwrites_diff(original: List[Overwrite], current: List[Overwrite]):
+    raise NotImplementedError
+    resp = {}
+    before: Dict[Snowflake, Overwrite] = {o.id: o for o in original}
+    for overwrite in current:
+        if overwrite.id not in before:
+            # If this is new
+            diff = {x: True for x in overwrite.allow}
+            diff.update({x: False for x in overwrite.deny})
+            resp[overwrite.id] = diff
+            continue
+        before_overwrite = before[overwrite.id]
+        diff = {}
+        for x in before_overwrite.allow:
+            if x not in overwrite.allow:
+                diff[x] = False if x in overwrite.deny else None
+        # for x in before_overwrite.deny
