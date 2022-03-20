@@ -188,13 +188,10 @@ class Manage(DMNotAllowedAddonBase, name="관리"):
 
         self.bot.dispatch("management_command", ctx)
 
-    @slash("언뮤트",
+    @slash(
+        "언뮤트",
         description="선택한 유저를 언뮤트하거나 타임아웃을 제거해요.",
-        connector={
-            "유저": "user",
-            "타임아웃": "use_timeout",
-            "사유": "reason"
-        },
+        connector={"유저": "user", "타임아웃": "use_timeout", "사유": "reason"},
     )
     @option(
         ApplicationCommandOptionType.USER,
@@ -214,7 +211,13 @@ class Manage(DMNotAllowedAddonBase, name="관리"):
         description="언뮤트 또는 타임아웃 제거의 사유",
         required=False,
     )
-    async def unmute(self, ctx: InteractionContext, user: GuildMember, use_timeout: bool = False, reason: str = None):
+    async def unmute(
+        self,
+        ctx: InteractionContext,
+        user: GuildMember,
+        use_timeout: bool = False,
+        reason: str = None,
+    ):
         await ctx.defer()
         if use_timeout:
             await self.bot.modify_guild_member(

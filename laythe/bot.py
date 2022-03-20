@@ -22,6 +22,7 @@ try:
     from extlib.spellchecker import SpellChecker
 except ImportError:
     import sys
+
     print("extlib missing, `/맞춤법` command and klist-related features disabled.")
     KListClient = None
     SpellChecker = None
@@ -60,8 +61,14 @@ class LaytheBot(Bot):
         )
         self.nugrid = None  # soonTM
         self.loop.create_task(self.setup_bot())
-        self.klist = KListClient(self, Config.KBOT_TOKEN, self.http.session) if KListClient else KListClient  # noqa
-        self.spell = SpellChecker(self.http.session) if SpellChecker else SpellChecker  # noqa
+        self.klist = (
+            KListClient(self, Config.KBOT_TOKEN, self.http.session)
+            if KListClient
+            else KListClient
+        )  # noqa
+        self.spell = (
+            SpellChecker(self.http.session) if SpellChecker else SpellChecker
+        )  # noqa
 
     async def setup_bot(self):
         await self.wait_ready()

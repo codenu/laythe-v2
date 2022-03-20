@@ -100,7 +100,9 @@ class Level(LaytheAddonBase, name="레벨"):
 
     @slash("레벨제외", description="특정 채널을 레벨 시스템에서 제외시키는 방법을 알려줘요.")
     async def exclude_level(self, ctx: InteractionContext):
-        await ctx.send("ℹ 현재 자동 설정은 사용할 수 없어요. 원하시는 채널을 레벨에서 제외하기 위해서는 해당 채널의 주제에 다음 문구를 추가해주세요.\n> `laythe:leveloff`")
+        await ctx.send(
+            "ℹ 현재 자동 설정은 사용할 수 없어요. 원하시는 채널을 레벨에서 제외하기 위해서는 해당 채널의 주제에 다음 문구를 추가해주세요.\n> `laythe:leveloff`"
+        )
 
     @on("message_create")
     async def on_message_create(self, message: Message):

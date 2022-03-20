@@ -539,9 +539,13 @@ class Log(LaytheAddonBase, name="로깅"):
         if not data.welcome_channel:
             return
         if data.greet:
-            await self.bot.create_message(data.welcome_channel, data.greet.format(mention=member.mention))
+            await self.bot.create_message(
+                data.welcome_channel, data.greet.format(mention=member.mention)
+            )
         if data.greet_dm and member.user:
-            await member.user.send(f"> `{self.bot.get_guild(member.guild_id).name}`에서 자동으로 전송한 환영 메세지에요.\n{data.greet_dm.format(name=str(member.user))}")
+            await member.user.send(
+                f"> `{self.bot.get_guild(member.guild_id).name}`에서 자동으로 전송한 환영 메세지에요.\n{data.greet_dm.format(name=str(member.user))}"
+            )
 
     @on("guild_member_remove")
     async def on_guild_member_remove(self, member_delete: GuildMemberRemove):
@@ -558,10 +562,14 @@ class Log(LaytheAddonBase, name="로깅"):
 
     @on("guild_member_remove")
     async def execute_goodbye(self, member_delete: GuildMemberRemove):
-        data = await self.bot.database.request_guild_setting(int(member_delete.guild_id))
+        data = await self.bot.database.request_guild_setting(
+            int(member_delete.guild_id)
+        )
         if not data.welcome_channel or not data.bye:
             return
-        await self.bot.create_message(data.welcome_channel, data.bye.format(name=str(member_delete.user)))
+        await self.bot.create_message(
+            data.welcome_channel, data.bye.format(name=str(member_delete.user))
+        )
 
     @on("message_reaction_remove_all")
     async def on_message_reaction_remove_all(self, remove: MessageReactionRemoveAll):
