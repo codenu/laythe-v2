@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 from dico import (
     Embed,
     MessageUpdate,
@@ -542,10 +544,11 @@ class Log(LaytheAddonBase, name="로깅"):
             await self.bot.create_message(
                 data.welcome_channel, data.greet.format(mention=member.mention)
             )
-        if data.greet_dm and member.user:
-            await member.user.send(
-                f"> `{self.bot.get_guild(member.guild_id).name}`에서 자동으로 전송한 환영 메세지에요.\n{data.greet_dm.format(name=str(member.user))}"
-            )
+        if data.greet_dm and member.user and not member.user.bot:
+            with suppress(HTTPError):
+                await member.user.send(
+                    f"> `{self.bot.get_guild(member.guild_id).name}`에서 자동으로 전송한 환영 메세지에요.\n{data.greet_dm.format(name=str(member.user))}"
+                )
 
     @on("guild_member_remove")
     async def on_guild_member_remove(self, member_delete: GuildMemberRemove):
