@@ -3,8 +3,6 @@ import platform
 
 import psutil
 
-from typing import TYPE_CHECKING
-
 from dico import (
     Ready,
     Embed,
@@ -15,7 +13,7 @@ from dico import (
     __version__ as dico_version,
     GuildMember,
 )
-from dico_command import Addon, on
+from dico_command import on
 from dico_interaction import (
     slash,
     option,
@@ -30,7 +28,6 @@ from laythe import (
     utils,
     verification_level_translates,
     verification_desc_translates,
-    rtc_region_translates,
     LaytheBot,
     LaytheAddonBase,
     has_perm,
@@ -200,6 +197,34 @@ class Utils(LaytheAddonBase, name="유틸리티"):
         await ctx.defer()
         await self.bot.follow_news_channel(Config.NOTICE_CHANNEL, ctx.channel_id)
         await ctx.send("✅ 성공적으로 CodeNU 레이테 공지 채널에 구독했어요.")
+
+    @slash("맞춤법", description="맞춤법을 검사해줘요. 틀린 경우가 있으니 참고용으로만 사용해주세요.", connector={"텍스트": "text"})
+    @option(ApplicationCommandOptionType.STRING, name="텍스트", description="맞춤법 검사를 진행할 텍스트", required=True)
+    async def spell_check(self, ctx: InteractionContext, text: str):
+        if not self.bot.spell:
+            return await ctx.send("❌ 이런! 이 봇에서는 이 기능을 사용할 수 없어요.\n[Laythe 소스코드는 여기서 확인할 수 있어요.](https://github.com/codenu/laythe-v2)")
+        await ctx.defer()
+        orig = text
+        changed = text
+        resp = await self.bot.spell.parse_async(text)
+        if resp is None:
+            return await ctx.send("ℹ 맞춤법 오류가 없어요.")
+        for x in resp["errInfo"]:
+            orig_text = x["orgStr"]
+            changed_text = x["candWord"]
+            changed = changed.replace(orig_text, changed_text)
+        if changed == orig:
+            return await ctx.send("ℹ 맞춤법 오류가 없어요.")
+        for x in resp["errInfo"]:
+            orig_text = x["orgStr"]
+            orig = orig.replace(orig_text, f"[__{orig_text}__]")
+        embed = Embed(
+                            title="문법 오류를 발견했어요.",
+                            timestamp=ctx.id.timestamp,
+                            color=utils.EmbedColor.NEGATIVE)
+        embed.add_field(name="수정 전", value=orig, inline=False)
+        embed.add_field(name="수정 후", value=changed or "`수정 결과를 표시할 수 없어요.`", inline=False)
+        await ctx.send(embed=embed)
 
     @on("ready")
     async def on_ready(self, ready: Ready):

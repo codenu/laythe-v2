@@ -17,6 +17,15 @@ from config import Config
 
 from .database import LaytheDB
 
+try:
+    from extlib.klist import KListClient
+    from extlib.spellchecker import SpellChecker
+except ImportError:
+    import sys
+    print("extlib missing, `/맞춤법` command and klist-related features disabled.")
+    KListClient = None
+    SpellChecker = None
+
 
 class InteractionClient(InteractionBase):
     async def handle_interaction(
@@ -51,6 +60,8 @@ class LaytheBot(Bot):
         )
         self.nugrid = None  # soonTM
         self.loop.create_task(self.setup_bot())
+        self.klist = KListClient(self, Config.KBOT_TOKEN, self.http.session) if KListClient else KListClient  # noqa
+        self.spell = SpellChecker(self.http.session) if SpellChecker else SpellChecker  # noqa
 
     async def setup_bot(self):
         await self.wait_ready()
@@ -61,6 +72,8 @@ class LaytheBot(Bot):
             login_pw=Config.DB_PW,
             db_name=Config.DB_NAME,
         )
+        if self.klist and not Config.DEBUG:
+            self.klist.create_guild_count_task()
 
     async def get_prefix(self, message: Message):
         await self.wait_ready()

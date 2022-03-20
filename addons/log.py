@@ -136,7 +136,7 @@ class Log(LaytheAddonBase, name="로깅"):
                 files = [x.url for x in message.attachments]
                 extra_msg = "\n".join(files)
                 embed.add_field(name="첨부파일", value=f"{len(files)}개", inline=False)
-        resp = await self.bot.execute_log(message.guild, embed=embed)
+        resp = await self.bot.execute_log(message_delete.guild, embed=embed)
         if resp and extra_msg:
             await resp.reply(extra_msg)
 
@@ -533,6 +533,16 @@ class Log(LaytheAddonBase, name="로깅"):
                     break
         await self.bot.execute_log(guild, embed=embed)
 
+    @on("guild_member_add")
+    async def execute_welcome(self, member: GuildMemberAdd):
+        data = await self.bot.database.request_guild_setting(int(member.guild_id))
+        if not data.welcome_channel:
+            return
+        if data.greet:
+            await self.bot.create_message(data.welcome_channel, data.greet.format(mention=member.mention))
+        if data.greet_dm and member.user:
+            await member.user.send(f"> `{self.bot.get_guild(member.guild_id).name}`에서 자동으로 전송한 환영 메세지에요.\n{data.greet_dm.format(name=str(member.user))}")
+
     @on("guild_member_remove")
     async def on_guild_member_remove(self, member_delete: GuildMemberRemove):
         embed = Embed(
@@ -545,6 +555,13 @@ class Log(LaytheAddonBase, name="로깅"):
             embed.set_thumbnail(url=member_delete.member.avatar_url())
         embed.set_footer(text=f"유저 ID: {member_delete.user.id}")
         await self.bot.execute_log(member_delete.guild, embed=embed)
+
+    @on("guild_member_remove")
+    async def execute_goodbye(self, member_delete: GuildMemberRemove):
+        data = await self.bot.database.request_guild_setting(int(member_delete.guild_id))
+        if not data.welcome_channel or not data.bye:
+            return
+        await self.bot.create_message(data.welcome_channel, data.bye.format(name=str(member_delete.user)))
 
     @on("message_reaction_remove_all")
     async def on_message_reaction_remove_all(self, remove: MessageReactionRemoveAll):

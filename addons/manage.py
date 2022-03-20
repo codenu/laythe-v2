@@ -183,10 +183,53 @@ class Manage(DMNotAllowedAddonBase, name="관리"):
                 ctx.guild_id, user, data.mute_role, reason=reason
             )
         await ctx.send(
-            f"✅ 성공적으로 <@{int(user)}>{'에게 타임아웃을 적용했어요.' if use_timeout else '를 뮤트했어요.'}"
+            f"✅ 성공적으로 <@!{int(user)}>{'에게 타임아웃을 적용했어요.' if use_timeout else '를 뮤트했어요.'}"
         )
 
         self.bot.dispatch("management_command", ctx)
+
+    @slash("언뮤트",
+        description="선택한 유저를 언뮤트하거나 타임아웃을 제거해요.",
+        connector={
+            "유저": "user",
+            "타임아웃": "use_timeout",
+            "사유": "reason"
+        },
+    )
+    @option(
+        ApplicationCommandOptionType.USER,
+        name="유저",
+        description="뮤트를 하거나 타임아웃을 활성화할 유저",
+        required=True,
+    )
+    @option(
+        ApplicationCommandOptionType.BOOLEAN,
+        name="타임아웃",
+        description="역할 대신 타임아웃을 제거할 지의 여부, 만약에 뮤트 역할이 설정되지 않았다면 타임아웃으로 강제됩니다.",
+        required=False,
+    )
+    @option(
+        ApplicationCommandOptionType.STRING,
+        name="사유",
+        description="언뮤트 또는 타임아웃 제거의 사유",
+        required=False,
+    )
+    async def unmute(self, ctx: InteractionContext, user: GuildMember, use_timeout: bool = False, reason: str = None):
+        await ctx.defer()
+        if use_timeout:
+            await self.bot.modify_guild_member(
+                ctx.guild_id, user, communication_disabled_until=None, reason=reason
+            )
+        else:
+            data = await self.bot.database.request_guild_setting(int(ctx.guild_id))
+            if not data.mute_role:
+                return await ctx.send("❌ 뮤트 역할이 존재하지 않아요. 먼저 뮤트 역할을 설정해주세요.")
+            await self.bot.remove_guild_member_role(
+                ctx.guild_id, user, data.mute_role, reason=reason
+            )
+        await ctx.send(
+            f"✅ 성공적으로 <@!{int(user)}>{'에게 타임아웃을 제거했어요.' if use_timeout else '를 언뮤트했어요.'}"
+        )
 
     @slash("추방", description="선택한 유저를 추방해요.", connector={"유저": "user", "사유": "reason"})
     @option(

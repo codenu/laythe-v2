@@ -38,7 +38,7 @@ permission_translates = {
     "create_public_threads": "공개 스레드 만들기",
     "create_private_threads": "비공개 스레드 만들기",
     "manage_threads": "스레드 관리하기",
-    "start_embedded_activities": "활동 시작하기",
+    "use_embedded_activities": "활동 시작하기",
     "moderate_members": "타임아웃 멤버",
     "manage_events": "이벤트 관리",
 }
