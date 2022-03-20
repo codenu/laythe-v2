@@ -40,14 +40,14 @@ class Level(LaytheAddonBase, name="레벨"):
         level_bar = create_index_bar(
             exp_req,
             level.exp,
-            "<:2_2:944978822669946910>",
-            "<:2_3:944978834149752932>",
-            "<:2_4:944978845453406218>",
+            "<:002:955008110026686464>",
+            "<:003:955008126183157840>",
+            "<:004:955008136723443742>",
             10,
         )
         embed = Embed(
             title=f"레벨 {level.level} (#{level.rank})",
-            description=f"> <:2_1:944978809772466186>{level_bar}<:2_5:944978858875166790> [**{level.exp}**/**{int(exp_req)}**]",
+            description=f"> <:001:955008090439295007>{level_bar}<:005:955008146949169182> [**{level.exp}**/**{int(exp_req)}**]",
             color=EmbedColor.DEFAULT,
             timestamp=ctx.id.timestamp,
         )
