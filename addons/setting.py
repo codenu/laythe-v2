@@ -102,6 +102,7 @@ class Setting(LaytheAddonBase, name="설정"):
     )
     @checks(has_perm(manage_guild=True))
     async def setting_view(self, ctx: InteractionContext):
+        await ctx.defer()
         setting = await self.bot.database.request_guild_setting(int(ctx.guild_id))
         embed = self.create_setting_view_embed(setting)
         row = ActionRow()

@@ -60,12 +60,13 @@ class Error(LaytheAddonBase, name="오류"):
         if report_required:
             components.components[0].disabled = True
             try:
-                await self.bot.interaction.wait_interaction(
+                inter = await self.bot.interaction.wait_interaction(
                     timeout=60,
                     check=lambda x: x.data.custom_id == "errlog"
                     and x.message.id == msg.id
                     and x.author == ctx.author,
                 )
+                await inter.defer(ephemeral=True)
                 cmd = self.bot.interaction.get_command(ctx)
                 usage = f"/{cmd.command.name}"
                 if cmd.subcommand_group:
@@ -93,7 +94,7 @@ class Error(LaytheAddonBase, name="오류"):
                 await self.bot.create_message(
                     891520234920501268, f"새로운 오류가 저장되었습니다. (`{fname}`)"
                 )
-                await msg.reply("성공적으로 오류 메시지를 전송했어요!")
+                await inter.send("성공적으로 오류 메시지를 전송했어요!")
             except TimeoutError:
                 pass
             await msg.edit(components=[components])
