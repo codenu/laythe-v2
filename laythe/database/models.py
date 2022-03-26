@@ -96,10 +96,5 @@ class Level:
     @classmethod
     def create(cls, user_id: int, guild_id: int, exp: int, level: int):
         return cls(
-            {
-                "user_id": user_id,
-                "guild_id": guild_id,
-                "exp": exp,
-                "level": level,
-            }
+            {"user_id": user_id, "guild_id": guild_id, "exp": exp, "level": level,}
         )

@@ -67,16 +67,22 @@ def create_index_bar(
     end_text_no_icon: str = "=",
     end_text_with_icon: str = "🔴",
     size: int = 30,
-    ):
-        percent = now / length
-        pos = floor(percent * size)
-        if pos == 0:
-            base = start_text_with_icon + middle_bar_dim * (size - 2) + end_text_no_icon
-        elif pos >= size - 1:
-            base = start_text_no_icon + middle_bar_bright * (size - 2) + end_text_with_icon
-        else:
-            base = start_text_no_icon + middle_bar_bright * (pos - 1) + middle_bar_icon + middle_bar_dim * (size - pos - 2) + end_text_no_icon
-        return f"{''.join(base)}"
+):
+    percent = now / length
+    pos = floor(percent * size)
+    if pos == 0:
+        base = start_text_with_icon + middle_bar_dim * (size - 2) + end_text_no_icon
+    elif pos >= size - 1:
+        base = start_text_no_icon + middle_bar_bright * (size - 2) + end_text_with_icon
+    else:
+        base = (
+            start_text_no_icon
+            + middle_bar_bright * (pos - 1)
+            + middle_bar_icon
+            + middle_bar_dim * (size - pos - 2)
+            + end_text_no_icon
+        )
+    return f"{''.join(base)}"
 
 
 def kstnow() -> datetime.datetime:
