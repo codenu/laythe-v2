@@ -105,16 +105,14 @@ class Setting(LaytheAddonBase, name="설정"):
         await ctx.defer()
         setting = await self.bot.database.request_guild_setting(int(ctx.guild_id))
         embed = self.create_setting_view_embed(setting)
-        row = ActionRow()
-        if setting.reward_roles:
-            row.components.append(
-                Button(
-                    style=ButtonStyles.SECONDARY,
-                    label="레벨 보상 역할 보기",
-                    custom_id="view-level-reward",
-                )
+        row = ActionRow(
+            Button(
+                style=ButtonStyles.SECONDARY,
+                label="레벨 보상 역할 보기",
+                custom_id="view-level-reward",
             )
-        await ctx.send(embed=embed, components=[row])
+        )
+        await ctx.send(embed=embed, components=[row] if setting.reward_roles else [])
 
     @component_callback("view-guild-setting")
     async def view_guild_setting(self, ctx: InteractionContext):
