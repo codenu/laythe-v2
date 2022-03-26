@@ -1,4 +1,5 @@
 import datetime
+from math import floor
 
 from typing import List, Dict, Optional
 
@@ -58,16 +59,24 @@ def parse_second_with_date(time: int):
 def create_index_bar(
     length: float,
     now: float,
-    bar_text: str = "=",
-    icon_text: str = "🔴",
-    after_text: str = "=",
+    start_text_no_icon: str = "=",
+    start_text_with_icon: str = "🔴",
+    middle_bar_bright: str = "=",
+    middle_bar_icon: str = "🔴",
+    middle_bar_dim: str = "=",
+    end_text_no_icon: str = "=",
+    end_text_with_icon: str = "🔴",
     size: int = 30,
-):
-    percent = now / length
-    pos = round(percent * size)
-    base = [bar_text if x <= pos else after_text for x in range(size)]
-    base[pos if pos <= size - 1 else -1] = icon_text
-    return f"{''.join(base)}"
+    ):
+        percent = now / length
+        pos = floor(percent * size)
+        if pos == 0:
+            base = start_text_with_icon + middle_bar_dim * (size - 2) + end_text_no_icon
+        elif pos >= size - 1:
+            base = start_text_no_icon + middle_bar_bright * (size - 2) + end_text_with_icon
+        else:
+            base = start_text_no_icon + middle_bar_bright * (pos - 1) + middle_bar_icon + middle_bar_dim * (size - pos - 2) + end_text_no_icon
+        return f"{''.join(base)}"
 
 
 def kstnow() -> datetime.datetime:

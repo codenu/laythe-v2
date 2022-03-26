@@ -37,17 +37,10 @@ class Level(LaytheAddonBase, name="레벨"):
         if not level:
             return await ctx.send("ℹ 해당 유저의 레벨 기록이 존재하지 않아요.")
         exp_req = self.calc_exp_required(level.level + 1)
-        level_bar = create_index_bar(
-            exp_req,
-            level.exp,
-            "<:002:955008110026686464>",
-            "<:003:955008126183157840>",
-            "<:004:955008136723443742>",
-            10,
-        )
+        level_bar = create_index_bar(exp_req, level.exp, '<:01:955002128328425522>', '<:06:957278813941825576>', '<:02:955002128294871061>', '<:03:955002129246994435>', '<:04:955002128265519114>', '<:05:955002128257150988>', '<:07:957278813824352276>', 12)
         embed = Embed(
             title=f"레벨 {level.level} (#{level.rank})",
-            description=f"> <:001:955008090439295007>{level_bar}<:005:955008146949169182> [**{level.exp}**/**{int(exp_req)}**]",
+            description=f"> {level_bar} [**{level.exp}**/**{int(exp_req)}**]",
             color=EmbedColor.DEFAULT,
             timestamp=ctx.id.timestamp,
         )
