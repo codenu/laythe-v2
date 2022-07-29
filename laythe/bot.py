@@ -20,12 +20,15 @@ from .database import LaytheDB
 try:
     from extlib.klist import KListClient
     from extlib.spellchecker import SpellChecker
+    from extlib.nugrid import NUgridClient, NUgridHandler
 except ImportError:
     import sys
 
     print("extlib missing, `/맞춤법` command and klist-related features disabled.")
     KListClient = None
     SpellChecker = None
+    NUgridClient = None
+    NUgridHandler = None
 
 
 class InteractionClient(InteractionBase):
@@ -42,6 +45,7 @@ class InteractionClient(InteractionBase):
 class LaytheBot(Bot):
     interaction: InteractionClient
     database: LaytheDB
+    nugrid: NUgridClient
 
     def __init__(self, *, logger: Logger):
         intents = Intents.no_privileged()
@@ -59,7 +63,6 @@ class LaytheBot(Bot):
             guild_ids_lock=Config.TESTING_GUILDS,
             auto_register_commands=bool(Config.TESTING_GUILDS),
         )
-        self.nugrid = None  # soonTM
         self.loop.create_task(self.setup_bot())
         self.klist = (
             KListClient(self, Config.KBOT_TOKEN, self.http.session)
@@ -69,6 +72,8 @@ class LaytheBot(Bot):
         self.spell = (
             SpellChecker(self.http.session) if SpellChecker else SpellChecker
         )  # noqa
+        self.nugrid = NUgridClient(Config.NUGRID_HOST, session=self.http.session, loop=self.loop)
+        self.nugrid_handler = NUgridHandler(self.nugrid)
 
     async def setup_bot(self):
         await self.wait_ready()
@@ -81,6 +86,12 @@ class LaytheBot(Bot):
         )
         if self.klist and not Config.DEBUG:
             self.klist.create_guild_count_task()
+        if self.nugrid:
+            self.nugrid.headers = {
+                "Authentication": Config.NUGRID_PASSWORD,
+                "Client": str(self.user.id)
+            }
+            self.loop.create_task(self.nugrid.start())
 
     async def get_prefix(self, message: Message):
         await self.wait_ready()
@@ -106,3 +117,8 @@ class LaytheBot(Bot):
             kwargs["username"] = guild.name
             kwargs["avatar_url"] = guild.icon_url()
             return await webhook.execute(**kwargs)
+
+    async def close(self):
+        await self.database.close()
+        await self.nugrid.close()
+        await super().close()

@@ -9,4 +9,4 @@ dummy.json
 test.py
 venv
 addons/_setting.py
-traceback
+addons/nugrid.py

@@ -55,6 +55,9 @@ class LaytheDB(BaseDatabase):
         if resp:
             await self.update_cache(guild_id, "settings", json.dumps(resp[0]))
             return Setting(resp[0])
+        else:
+            await self.reset_guild_setting(guild_id)
+            return await self.request_guild_setting(guild_id)
 
     async def update_guild_setting(self, data: Setting):
         data = data.to_dict()
@@ -128,11 +131,12 @@ class LaytheDB(BaseDatabase):
     async def update_level(self, data: Level):
         data = data.to_dict()
         guild_id = data.pop("guild_id")
+        user_id = data.pop("user_id")
 
         # TODO: better method?
         inject = ", ".join([f"{x}=%s" for x in data.keys()])
         await self.execute(
-            f"UPDATE levels SET {inject} WHERE guild_id=%s", (*data.values(), guild_id)
+            f"UPDATE levels SET {inject} WHERE guild_id=%s AND user_id=%s", (*data.values(), guild_id, user_id)
         )
 
     async def reset_level(self, guild_id: int, user_id: int = None):

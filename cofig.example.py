@@ -23,3 +23,7 @@ class Config:
     DB_ID: str = ""
     DB_PW: str = ""
     DB_NAME: str = ""
+
+    # NUgrid
+    NUGRID_HOST: str = ""
+    NUGRID_PASSWORD: str = ""

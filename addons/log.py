@@ -75,6 +75,8 @@ class Log(LaytheAddonBase, name="로깅"):
 
     @on("message_update")
     async def on_message_update(self, message: MessageUpdate):
+        if not message:
+            return
         if not message.original:
             return
         if message.author.bot:
@@ -334,7 +336,7 @@ class Log(LaytheAddonBase, name="로깅"):
                 value=f"{before_mention} -> {owner_after.mention}\n(`{owner_before}` -> `{owner_after}`)",
                 inline=False,
             )
-        if guild.system_channel_id != guild.original.system_channel_id:
+        if (not guild.original.system_channel_id and guild.system_channel_id) or (not guild.system_channel_id and guild.original.system_channel_id) or guild.system_channel_id != guild.original.system_channel_id:
             before_sys = (
                 f"<#{guild.original.system_channel_id}>"
                 if guild.original.system_channel_id
@@ -518,21 +520,24 @@ class Log(LaytheAddonBase, name="로깅"):
         embed.set_footer(text=f"유저 ID: {member.id}")
         maybe_me = guild.get(self.bot.user.id, "member")
         if member.user.bot and maybe_me and maybe_me.permissions.view_audit_log:
-            for x in await self.bot.request_guild_audit_log(
-                guild, action_type=AuditLogEvents.BOT_ADD, limit=10
-            ):
-                found = False
-                for y in x.audit_log_entries:
-                    if member.id == y.target.id:
-                        embed.title = "새로운 봇 추가"
-                        embed.add_field(
-                            name="봇 추가자", value=f"<@!{y.user_id}>", inline=False
-                        )
-                        embed.footer.text += f"\n관리자 ID: {y.user_id}"
-                        found = True
+            with suppress(Exception):
+                resp = await self.bot.request_guild_audit_log(
+                    guild, action_type=AuditLogEvents.BOT_ADD, limit=10
+                )
+                resp = resp if isinstance(resp, list) else [resp]
+                for x in resp:
+                    found = False
+                    for y in x.audit_log_entries:
+                        if member.id == y.target.id:
+                            embed.title = "새로운 봇 추가"
+                            embed.add_field(
+                                name="봇 추가자", value=f"<@!{y.user_id}>", inline=False
+                            )
+                            embed.footer.text += f"\n관리자 ID: {y.user_id}"
+                            found = True
+                            break
+                    if found:
                         break
-                if found:
-                    break
         await self.bot.execute_log(guild, embed=embed)
 
     @on("guild_member_add")
