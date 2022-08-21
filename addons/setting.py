@@ -338,7 +338,7 @@ class Setting(LaytheAddonBase, name="설정"):
         setting = await self.bot.database.request_guild_setting(
             int(ctx.guild_id), bypass_cache=True
         )
-        setting.welcome_channe = int(channel) if channel else channel
+        setting.welcome_channel = int(channel) if channel else channel
         await self.bot.database.update_guild_setting(setting)
         await ctx.send(
             f"✅ 성공적으로 환영 채널을 {f'<#{channel.id}>으로 설정' if channel else '삭제'}했어요. 실제 적용까지는 최대 5분 정도 걸릴 수 있어요.\n{self.VOTE_AD}"

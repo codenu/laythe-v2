@@ -1,3 +1,4 @@
+from typing import Optional
 from .base import BaseFlag, JSONStrInt
 
 
@@ -15,17 +16,23 @@ class WarnActions(JSONStrInt):
 
 class Setting:
     def __init__(self, data: dict):
-        self.guild_id: int = data["guild_id"]
-        self.accepted: bool = data["accepted"]
-        self.custom_prefix: str = data["custom_prefix"]
+        self.guild_id: int = int(data["guild_id"])
+        self.accepted: bool = bool(data["accepted"])
+        self.custom_prefix: Optional[str] = data["custom_prefix"]
         self.flags: LaytheSettingFlags = LaytheSettingFlags.from_value(data["flags"])
-        self.mute_role: int = data["mute_role"]
-        self.log_channel: int = data["log_channel"]
-        self.welcome_channel: int = data["welcome_channel"]
-        self.starboard_channel: int = data["starboard_channel"]
-        self.greet: str = data["greet"]
-        self.greet_dm: str = data["greet_dm"]
-        self.bye: str = data["bye"]
+        self.mute_role: Optional[int] = data["mute_role"] and int(data["mute_role"])
+        self.log_channel: Optional[int] = data["log_channel"] and int(
+            data["log_channel"]
+        )
+        self.welcome_channel: Optional[int] = data["welcome_channel"] and int(
+            data["welcome_channel"]
+        )
+        self.starboard_channel: Optional[int] = data["starboard_channel"] and int(
+            data["starboard_channel"]
+        )
+        self.greet: Optional[str] = data["greet"]
+        self.greet_dm: Optional[str] = data["greet_dm"]
+        self.bye: Optional[str] = data["bye"]
         self.reward_roles: RewardRoles = RewardRoles(data["reward_roles"] or "{}")
         self.warn_actions: WarnActions = WarnActions(data["warn_actions"] or "{}")
 

@@ -336,7 +336,11 @@ class Log(LaytheAddonBase, name="로깅"):
                 value=f"{before_mention} -> {owner_after.mention}\n(`{owner_before}` -> `{owner_after}`)",
                 inline=False,
             )
-        if (not guild.original.system_channel_id and guild.system_channel_id) or (not guild.system_channel_id and guild.original.system_channel_id) or guild.system_channel_id != guild.original.system_channel_id:
+        if (
+            (not guild.original.system_channel_id and guild.system_channel_id)
+            or (not guild.system_channel_id and guild.original.system_channel_id)
+            or guild.system_channel_id != guild.original.system_channel_id
+        ):
             before_sys = (
                 f"<#{guild.original.system_channel_id}>"
                 if guild.original.system_channel_id

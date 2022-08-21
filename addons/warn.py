@@ -49,30 +49,9 @@ class Warn(DMNotAllowedAddonBase, name="경고"):
         self, ctx: InteractionContext, user: GuildMember, reason: str = "없음"
     ):
         await ctx.defer()
-        data = WarnData.create(
-            guild_id=int(ctx.guild_id),
-            date=int(ctx.id.timestamp.timestamp()),
-            user_id=int(user),
-            mod_id=int(ctx.author),
-            reason=reason,
+        embed = await self.bot.add_warn(
+            ctx.guild_id, ctx.id.timestamp, user, ctx.author, reason
         )
-        await self.bot.database.add_guild_warn(data)
-        embed = Embed(
-            title="유저 경고 추가", color=EmbedColor.NEGATIVE, timestamp=ctx.id.timestamp
-        )
-        embed.add_field(
-            name="경고 대상",
-            value=f"{user.mention} (`{user.user}` (ID: `{user.id}`))",
-            inline=False,
-        )
-        embed.add_field(
-            name="경고를 추가한 관리자",
-            value=f"{ctx.member.mention} (`{ctx.author}` (ID: `{ctx.author.id}`))",
-            inline=False,
-        )
-        embed.add_field(name="경고 ID", value=f"`{data.date}`", inline=False)
-        embed.add_field(name="경고 사유", value=reason, inline=False)
-        await self.bot.execute_log(self.bot.get_guild(ctx.guild_id), embed=embed)
         await ctx.send("✅ 성공적으로 경고를 추가했어요. 자세한 내용은 다음을 참고해주세요.", embed=embed)
 
     @slash(
@@ -90,12 +69,11 @@ class Warn(DMNotAllowedAddonBase, name="경고"):
     @checks(has_perm(ban_members=True))
     async def warn_remove(self, ctx: InteractionContext, warn_id: int):
         await ctx.defer()
-        target = await self.bot.database.request_guild_warn(int(ctx.guild_id), warn_id)
+        target = await self.bot.remove_warn(ctx.guild_id, warn_id)
         if not target:
             return await ctx.send(
                 "❌ 해당 경고를 찾을 수 없어요. 올바른 ID인지 다시 확인해주세요.", ephemeral=True
             )
-        await self.bot.database.remove_guild_warn(target)
         await ctx.send("✅ 성공적으로 해당 경고를 삭제했어요.")
 
     @slash(

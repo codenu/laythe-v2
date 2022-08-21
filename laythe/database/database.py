@@ -136,7 +136,8 @@ class LaytheDB(BaseDatabase):
         # TODO: better method?
         inject = ", ".join([f"{x}=%s" for x in data.keys()])
         await self.execute(
-            f"UPDATE levels SET {inject} WHERE guild_id=%s AND user_id=%s", (*data.values(), guild_id, user_id)
+            f"UPDATE levels SET {inject} WHERE guild_id=%s AND user_id=%s",
+            (*data.values(), guild_id, user_id),
         )
 
     async def reset_level(self, guild_id: int, user_id: int = None):
