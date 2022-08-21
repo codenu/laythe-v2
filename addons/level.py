@@ -68,7 +68,7 @@ class Level(LaytheAddonBase, name="레벨"):
         if not setting.flags.use_level:
             return await ctx.send("❌ 이 서버에서는 레벨 기능을 사용하지 않아요.")
         await ctx.send(
-            f"ℹ [여기서](https://laythe.codenu.kr/leaderboard/{ctx.guild_id}) 리더보드를 확인해보세요!"
+            f"[여기서](https://laythe.codenu.kr/leaderboard/{ctx.guild_id}) 리더보드를 확인해보세요!"
         )
 
     @slash("레벨리셋", description="이 서버 또는 해당 유저의 레벨을 리셋해요.", connector={"유저": "user"})
