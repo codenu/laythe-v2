@@ -1,18 +1,14 @@
 import datetime
 from contextlib import suppress
-from typing import Union, Optional
 from logging import Logger
+from typing import Optional, Union
 
-from dico import AllowedMentions, Intents, Guild, Embed, User, GuildMember
+from dico import AllowedMentions, Embed, Guild, GuildMember, Intents, User
 from dico.exception import HTTPError
 from dico_command import Bot, Message
-from dico_interaction import (
-    InteractionClient as InteractionBase,
-    InteractionContext,
-    InteractionCommand,
-    ComponentCallback,
-    AutoComplete,
-)
+from dico_interaction import AutoComplete, ComponentCallback
+from dico_interaction import InteractionClient as InteractionBase
+from dico_interaction import InteractionCommand, InteractionContext
 
 from config import Config
 
@@ -21,8 +17,8 @@ from .utils import EmbedColor, kstnow
 
 try:
     from extlib.klist import KListClient
-    from extlib.spellchecker import SpellChecker
     from extlib.nugrid import NUgridClient, NUgridHandler
+    from extlib.spellchecker import SpellChecker
 except ImportError:
     import sys
 

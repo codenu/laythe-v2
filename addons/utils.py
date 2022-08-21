@@ -2,38 +2,31 @@ import datetime
 import platform
 
 import psutil
-
 from dico import (
-    Ready,
-    Embed,
     ActionRow,
+    ApplicationCommandOptionType,
     Button,
     ButtonStyles,
-    ApplicationCommandOptionType,
-    __version__ as dico_version,
+    Embed,
     GuildMember,
+    Ready,
 )
+from dico import __version__ as dico_version
 from dico_command import on
-from dico_interaction import (
-    slash,
-    option,
-    checks,
-    InteractionContext,
-    __version__ as interaction_version,
-)
+from dico_interaction import InteractionContext
+from dico_interaction import __version__ as interaction_version
+from dico_interaction import checks, option, slash
 
 from config import Config
-
 from laythe import (
-    utils,
-    verification_level_translates,
-    verification_desc_translates,
-    LaytheBot,
     LaytheAddonBase,
-    has_perm,
+    LaytheBot,
     bot_has_perm,
+    has_perm,
+    utils,
+    verification_desc_translates,
+    verification_level_translates,
 )
-
 
 INFO_METADATA = {"name": "정보", "description": "다양한 정보를 보여주는 명령어들이에요."}
 

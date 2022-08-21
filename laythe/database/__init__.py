@@ -14,4 +14,4 @@
 """
 
 from .database import LaytheDB
-from .models import Warn, Level, Setting
+from .models import Level, Setting, Warn

@@ -1,9 +1,8 @@
 import json
+from typing import Dict, Optional
 
 import aiomysql
 import aiosqlite
-
-from typing import Dict, Optional
 
 
 class Cache:

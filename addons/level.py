@@ -1,20 +1,19 @@
-import time
 import random
-
+import time
 from contextlib import suppress
 
 from dico import (
-    Message,
-    GuildMember,
-    Embed,
+    ActionRow,
     ApplicationCommandOptionType,
     Button,
     ButtonStyles,
-    ActionRow,
+    Embed,
+    GuildMember,
+    Message,
 )
 from dico.exception import HTTPError
 from dico_command import on
-from dico_interaction import slash, InteractionContext, option, component_callback
+from dico_interaction import InteractionContext, component_callback, option, slash
 
 from laythe import LaytheAddonBase, LaytheBot
 from laythe.utils import EmbedColor, create_index_bar

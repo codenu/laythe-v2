@@ -1,10 +1,9 @@
-import time
 import json
-
-from typing import Optional, List, Any
+import time
+from typing import Any, List, Optional
 
 from .base import BaseDatabase
-from .models import Setting, Warn, Level
+from .models import Level, Setting, Warn
 
 
 class LaytheDB(BaseDatabase):

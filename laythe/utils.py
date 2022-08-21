@@ -1,11 +1,9 @@
 import datetime
 from math import floor
-
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 from dico import Overwrite, PermissionFlags, Snowflake
 from dico.utils import rgb
-
 
 permission_names = {
     getattr(PermissionFlags, x): x.lower()

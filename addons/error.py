@@ -1,21 +1,20 @@
 import sys
 import time
 import traceback
-
 from asyncio import TimeoutError
 
-from dico import Embed, ActionRow, Button, ButtonStyles, GuildMember, Channel, Role
+from dico import ActionRow, Button, ButtonStyles, Channel, Embed, GuildMember, Role
 from dico_command import on
 from dico_interaction import InteractionContext
 
 from config import Config
 from laythe import (
-    PermissionUnavailable,
-    PermissionNotFound,
     BotPermissionNotFound,
-    permission_translates,
-    LaytheBot,
     LaytheAddonBase,
+    LaytheBot,
+    PermissionNotFound,
+    PermissionUnavailable,
+    permission_translates,
 )
 from laythe.utils import EmbedColor
 

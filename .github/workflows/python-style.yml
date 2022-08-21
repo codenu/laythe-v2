@@ -19,4 +19,6 @@ jobs:
         run: pip install -r requirements.txt -r requirements-dev.txt
 
       - name: Check Style
-        run: black --check .
+        run: |
+          black --check .
+          isort -c --profile=black .

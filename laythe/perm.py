@@ -1,9 +1,8 @@
-from typing import Union, Dict
+from typing import Dict, Union
 
 from dico import PermissionFlags
 from dico.exception import DicoException
 from dico_interaction import InteractionContext
-
 
 PRELOADED_VALUES: Dict[str, int] = {
     getattr(PermissionFlags, x): x

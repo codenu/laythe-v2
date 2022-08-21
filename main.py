@@ -13,9 +13,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
 import os
 import sys
-import logging
 
 from dico import __version__ as dico_version
 from dico_command import __version__ as command_version

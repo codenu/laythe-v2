@@ -2,11 +2,11 @@ import asyncio
 
 from aiohttp.web import (
     Application,
-    Request,
     AppRunner,
+    Request,
+    Response,
     TCPSite,
     json_response,
-    Response,
 )
 from dico.exception import HTTPError
 
