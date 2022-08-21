@@ -114,6 +114,9 @@ class Setting(LaytheAddonBase, name="설정"):
             )
         )
         await ctx.send(embed=embed, components=[row] if setting.reward_roles else [])
+        await ctx.send(
+            "혹시 더 편한 설정 방법을 찾고 있으신가요? [대시보드에서](https://laythe.codenu.kr/dashboard) 설정을 해보세요!"
+        )
 
     @component_callback("view-guild-setting")
     async def view_guild_setting(self, ctx: InteractionContext):

@@ -67,12 +67,9 @@ class Level(LaytheAddonBase, name="레벨"):
         setting = await self.bot.database.request_guild_setting(int(ctx.guild_id))
         if not setting.flags.use_level:
             return await ctx.send("❌ 이 서버에서는 레벨 기능을 사용하지 않아요.")
-        levels = await self.bot.database.request_guild_rank(int(ctx.guild_id))
-        if not levels:
-            return await ctx.send(
-                "ℹ 아직 이 서버에서 레벨 기록이 존재하지 않아요. 레벨 기록이 쌓일 때 까지 조금만 더 기다려주세요."
-            )
-        await ctx.send("이런! ~~게으른 개발자 때문에~~ 아직 구현되지 않은 기능이에요.. 조금만 더 기다려주세요..")
+        await ctx.send(
+            f"ℹ [여기서](https://laythe.codenu.kr/leaderboard/{ctx.guild_id}) 리더보드를 확인해보세요!"
+        )
 
     @slash("레벨리셋", description="이 서버 또는 해당 유저의 레벨을 리셋해요.", connector={"유저": "user"})
     @option(ApplicationCommandOptionType.USER, name="유저", description="레벨을 리셋할 유저")
