@@ -1,5 +1,7 @@
 import asyncio
 
+from contextlib import suppress
+
 from aiohttp.web import (
     Application,
     AppRunner,
@@ -8,6 +10,7 @@ from aiohttp.web import (
     TCPSite,
     json_response,
 )
+from dico import GuildMember
 from dico.exception import HTTPError
 
 from laythe import LaytheAddonBase, LaytheBot, Setting
@@ -50,31 +53,51 @@ class Dashboard(LaytheAddonBase):
         users = {}
 
         for guild_id in guild_ids:
-            guild_users = {"unresolved": []}
+            guild_users = {}
+            unresolved = []
+            cached = self.bot.cache.get_guild_container(guild_id)
+
             for user_id in user_ids:
-                cached = self.bot.cache.get_guild_container(guild_id)
                 member = cached.get(user_id, "member")
                 if member:
-                    guild_users[str(member.id)] = {
-                        "avatar_url": member.avatar_url(),
-                        "nick": member.nick or member.user.username,
-                        "name": str(member.user),
-                        "permissions": str(member.permissions.value),
-                    }
-                    continue
-                try:
+                    guild_users[str(member.id)] = self.format_member(member)
+                else:
+                    unresolved.append(user_id)
+
+            if len(unresolved) == 1:
+                user_id = unresolved[0]
+                with suppress(HTTPError):
                     member = await self.bot.request_guild_member(guild_id, user_id)
-                    guild_users[str(member.id)] = {
-                        "avatar_url": member.avatar_url(),
-                        "nick": member.nick or member.user.username,
-                        "name": str(member.user),
-                        "permissions": str(member.permissions.value),
-                    }
-                except HTTPError:
-                    guild_users["unresolved"].append(user_id)
+                    guild_users[str(member.id)] = self.format_member(member)
+                    del unresolved[0]
+
+            last_id = None
+            while len(unresolved) != 0:
+                members = await self.bot.list_guild_members(guild_id, limit=1000, after=last_id)
+
+                copy = unresolved.copy()
+
+                for member in filter(lambda m: m.id in copy, members):
+                    guild_users[str(member.id)] = self.format_member(member)
+                    unresolved.remove(str(member.id))
+
+                if len(members) < 1000:
+                    break
+                last_id = members[-1].id
+
+            guild_users["unresolved"] = unresolved
             users[guild_id] = guild_users
 
         return json_response(users)
+
+    @staticmethod
+    def format_member(member: GuildMember):
+        return {
+                        "avatar_url": member.avatar_url(),
+                        "nick": member.nick or member.user.username,
+                        "name": str(member.user),
+                        "permissions": str(member.permissions.value) if member.permissions else None,
+                    }
 
     async def get_required_levels(self, request: Request):
         levels = None
