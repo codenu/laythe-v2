@@ -13,7 +13,13 @@ from dico import (
 )
 from dico.exception import HTTPError
 from dico_command import on
-from dico_interaction import InteractionContext, component_callback, option, slash
+from dico_interaction import (
+    InteractionContext,
+    checks,
+    component_callback,
+    option,
+    slash,
+)
 
 from laythe import LaytheAddonBase, LaytheBot
 from laythe.utils import EmbedColor, create_index_bar
@@ -73,6 +79,7 @@ class Level(LaytheAddonBase, name="레벨"):
 
     @slash("레벨리셋", description="이 서버 또는 해당 유저의 레벨을 리셋해요.", connector={"유저": "user"})
     @option(ApplicationCommandOptionType.USER, name="유저", description="레벨을 리셋할 유저")
+    @checks(has_perm(manage_guild=True))
     async def reset_level(self, ctx: InteractionContext, user: GuildMember = None):
         yes_button = Button(
             style=ButtonStyles.SUCCESS,
@@ -99,6 +106,7 @@ class Level(LaytheAddonBase, name="레벨"):
         await ctx.edit_original_response(content="✅ 성공적으로 레벨을 리셋했어요.", components=[])
 
     @slash("레벨제외", description="특정 채널을 레벨 시스템에서 제외시키는 방법을 알려줘요.")
+    @checks(has_perm(manage_guild=True))
     async def exclude_level(self, ctx: InteractionContext):
         await ctx.send(
             "ℹ 현재 자동 설정은 사용할 수 없어요. 원하시는 채널을 레벨에서 제외하기 위해서는 해당 채널의 주제에 다음 문구를 추가해주세요.\n> `laythe:leveloff`"
