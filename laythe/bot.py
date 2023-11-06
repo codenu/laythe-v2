@@ -3,14 +3,13 @@ from contextlib import suppress
 from logging import Logger
 from typing import Optional, Union
 
+from config import Config
 from dico import AllowedMentions, Embed, Guild, GuildMember, Intents, User
 from dico.exception import HTTPError
 from dico_command import Bot, Message
 from dico_interaction import AutoComplete, ComponentCallback
 from dico_interaction import InteractionClient as InteractionBase
 from dico_interaction import InteractionCommand, InteractionContext
-
-from config import Config
 
 from .database import LaytheDB, Warn
 from .utils import EmbedColor, kstnow

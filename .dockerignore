@@ -1,0 +1,15 @@
+.idea
+.git
+.github
+venv
+config/*
+.dockerignore
+.gitignore
+config.example.py
+config.py
+docker-compose.yml
+Dockerfile
+requirements-dev.txt
+*.log
+**/.DS_Store
+**/__pycache__

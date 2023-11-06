@@ -2,6 +2,7 @@ import datetime
 import platform
 
 import psutil
+from config import Config
 from dico import (
     ActionRow,
     ApplicationCommandOptionType,
@@ -17,7 +18,6 @@ from dico_interaction import InteractionContext
 from dico_interaction import __version__ as interaction_version
 from dico_interaction import checks, option, slash
 
-from config import Config
 from laythe import (
     LaytheAddonBase,
     LaytheBot,

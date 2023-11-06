@@ -1,5 +1,4 @@
 import asyncio
-
 from contextlib import suppress
 
 from aiohttp.web import (
@@ -73,7 +72,9 @@ class Dashboard(LaytheAddonBase):
 
             last_id = None
             while len(unresolved) != 0:
-                members = await self.bot.list_guild_members(guild_id, limit=1000, after=last_id)
+                members = await self.bot.list_guild_members(
+                    guild_id, limit=1000, after=last_id
+                )
 
                 copy = unresolved.copy()
 
@@ -93,11 +94,13 @@ class Dashboard(LaytheAddonBase):
     @staticmethod
     def format_member(member: GuildMember):
         return {
-                        "avatar_url": member.avatar_url(),
-                        "nick": member.nick or member.user.username,
-                        "name": str(member.user),
-                        "permissions": str(member.permissions.value) if member.permissions else None,
-                    }
+            "avatar_url": member.avatar_url(),
+            "nick": member.nick or member.user.username,
+            "name": str(member.user),
+            "permissions": str(member.permissions.value)
+            if member.permissions
+            else None,
+        }
 
     async def get_required_levels(self, request: Request):
         levels = None
