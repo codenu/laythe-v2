@@ -1,6 +1,7 @@
 .idea
 __pycache__
 config.py
+config
 *.log
 traceback
 extlib
