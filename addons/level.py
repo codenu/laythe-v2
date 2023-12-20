@@ -21,7 +21,7 @@ from dico_interaction import (
     slash,
 )
 
-from laythe import LaytheAddonBase, LaytheBot
+from laythe import LaytheAddonBase, LaytheBot, has_perm
 from laythe.utils import EmbedColor, create_index_bar
 
 

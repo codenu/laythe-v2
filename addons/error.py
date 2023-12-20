@@ -3,11 +3,11 @@ import time
 import traceback
 from asyncio import TimeoutError
 
-from config import Config
 from dico import ActionRow, Button, ButtonStyles, Channel, Embed, GuildMember, Role
 from dico_command import on
 from dico_interaction import InteractionContext
 
+from config import Config
 from laythe import (
     BotPermissionNotFound,
     LaytheAddonBase,
