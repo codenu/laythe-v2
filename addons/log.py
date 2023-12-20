@@ -125,11 +125,13 @@ class Log(LaytheAddonBase, name="로깅"):
                 text=f"메시지 ID: {message_delete.id}\n채널 ID: {message_delete.channel_id}"
             )
         else:
+            """
             embed.add_field(
                 name="메시지 내용",
                 value=message.content or self.CONTENT_UNAVAILABLE,
                 inline=False,
             )
+            """
             embed.set_author(
                 name=str(message.member), icon_url=message.member.avatar_url()
             )
