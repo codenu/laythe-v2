@@ -1,4 +1,4 @@
-dico-api>=0.0.32
+dico-api>=0.0.38
 dico-command
 dico-interaction
 dico-dp
