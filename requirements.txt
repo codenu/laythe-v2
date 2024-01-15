@@ -1,6 +1,6 @@
 dico-api>=0.0.38
 dico-command
-git+https://github.com/dico-api/dico-interaction
+git+https://github.com/dico-api/dico-interaction@2ae2e5ad939b3709a59e13e5473c9ed5e16832f4
 dico-dp
 aiomysql
 aiosqlite
